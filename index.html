@@ -367,30 +367,49 @@
 
 				taskData = rows.map(r => {
                     // 🛠️ SMART PARENT DETECTION: Scan all possible columns for parent CR
-                    let parentVal = r["Parent"] || r["Parent Link"] || r["Epic Link"] || r["Parent CR"] || r["Parent issue"] || r["Custom field (Parent Link)"] || "";
-                    
+                    let parentVal = "";
+                    for (const key in r) {
+                        const lowerKey = key.toLowerCase().trim();
+                        // สแกนหาชื่อคอลัมน์ Parent ยอดฮิตในระบบ Jira
+                        if (lowerKey === "parent" || lowerKey === "parent link" || lowerKey === "epic link" || lowerKey === "parent cr" || lowerKey === "parent issue" || lowerKey === "custom field (parent link)" || lowerKey === "parent id") {
+                            parentVal = r[key];
+                            break;
+                        }
+                    }
+                    // Fallback: ถ้ายังไม่เจอ ให้กวาดหาคำว่า parent หรือ epic จากทุกคอลัมน์
                     if (!parentVal) {
                         for (const key in r) {
-                            const lowerKey = key.toLowerCase();
-                            if (lowerKey.includes("parent") || lowerKey.includes("epic link")) {
+                            const lowerKey = key.toLowerCase().trim();
+                            if (lowerKey.includes("parent") || lowerKey.includes("epic")) {
                                 parentVal = r[key];
                                 break;
                             }
                         }
                     }
                     
-                    if (typeof parentVal === 'string') parentVal = parentVal.trim();
-                    if (parentVal.toUpperCase() === 'N/A' || parentVal === '-') parentVal = "";
+                    // แปลงค่าให้เป็น Text เสมอ เพื่อป้องกัน API ส่งค่ามาเป็น Object
+                    if (parentVal !== null && parentVal !== undefined) {
+                        parentVal = String(parentVal).trim();
+                        if (parentVal.toUpperCase() === 'N/A' || parentVal === '-') parentVal = "";
+                    } else {
+                        parentVal = "";
+                    }
+
+                    // 🛠️ DUE DATE FORMATTING: ตัดเวลา T17:00:00.000Z ทิ้ง ให้เหลือแค่วันที่
+                    let dueDateVal = r["Due Date"] || r["Due date"] || r["Custom field (Due Date)"] || "";
+                    if (dueDateVal && typeof dueDateVal === 'string' && dueDateVal.includes("T")) {
+                        dueDateVal = dueDateVal.split("T")[0];
+                    }
 
 					return {
 						id: generateId(),
 						jira: r["Issue Key"] || r["Key"] || r["Issue key"] || "",
-						parent: parentVal, // Cleaned up Parent Value
+						parent: parentVal, // ใส่ค่า Parent ที่ถูกคลีนแล้ว
 						name: r["Summary"] || r["Title"] || "Untitled",
 						assignee: r["Assignee"] || "Unassigned",
 						priority: r["Priority"] || "Medium",
 						status: r["Status"] || "TODO",
-						dueDate: r["Due Date"] || r["Due date"] || "",
+						dueDate: dueDateVal, // ใส่ค่า Due Date ที่ตัดเวลาทิ้งแล้ว
 						changeType: r["Issue/Change Type"] || r["Change Type"] || r["Issue Type"] || ""
 					};
 				});
