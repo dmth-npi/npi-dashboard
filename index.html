@@ -18,18 +18,9 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], },
                     colors: {
-                        corporate: {
-                            primary: '#0056b3',   
-                            success: '#10b981',   
-                            accent: '#f59e0b',    
-                            danger: '#ef4444',    
-                            dark: '#1e293b',      
-                            light: '#f8fafc'      
-                        }
+                        corporate: { primary: '#0056b3', success: '#10b981', accent: '#f59e0b', danger: '#ef4444', dark: '#1e293b', light: '#f8fafc' }
                     }
                 }
             }
@@ -37,11 +28,7 @@
     </script>
     <style>
         body { background-color: #f1f5f9; }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -62,62 +49,35 @@
                     <span class="font-bold text-lg tracking-tight sm:hidden">NPI Dashboard</span>
                 </div>
                 
-				
 				<div class="flex items-center gap-3">
-
-					<span id="lastUpdatedText"
-						  class="text-xs text-slate-300 hidden lg:block">
-						Connecting...
-					</span>
-
-					<button onclick="loadGoogleSheet()"
-							class="bg-corporate-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
-						<i class="fa-solid fa-arrows-rotate"></i>
-						Sync
+					<span id="lastUpdatedText" class="text-xs text-slate-300 hidden lg:block">Connecting...</span>
+					<button onclick="loadGoogleSheet()" class="bg-corporate-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+						<i class="fa-solid fa-arrows-rotate"></i> Sync
 					</button>
-
-					<label for="csvUpload"
-						   class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 cursor-pointer">
-						<i class="fa-solid fa-file-csv"></i>
-						CSV
+					<label for="csvUpload" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 cursor-pointer">
+						<i class="fa-solid fa-file-csv"></i> CSV
 					</label>
-
-					<input type="file"
-						   id="csvUpload"
-						   accept=".csv"
-						   class="hidden"
-						   onchange="handleFileUpload(event)">
-
+					<input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
 					<div class="h-8 w-8 rounded-full bg-slate-600 flex items-center justify-center border-2 border-slate-400">
 						<i class="fa-solid fa-user-tie text-sm"></i>
 					</div>
-
 				</div>
-				
             </div>
         </div>
     </nav>
 
     <main class="flex-grow max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
         
-        <!-- Live Sync Control Panel -->
-
-
         <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">Workload & WIP Tracking</h1>
-            </div>
+            <div><h1 class="text-2xl font-bold text-slate-900">Workload & WIP Tracking</h1></div>
             
             <div class="flex flex-wrap items-center gap-2">
-                <!-- Status Filter -->
                 <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border border-slate-200 focus-within:ring-2 focus-within:ring-corporate-primary/20">
                     <i class="fa-solid fa-list-check text-slate-400 text-xs"></i>
                     <select id="statusFilter" onchange="syncTableFilter(); filterData();" class="text-sm border-none bg-transparent focus:ring-0 font-medium text-slate-700 cursor-pointer outline-none w-full sm:w-auto min-w-[150px]">
                         <option value="All">All Statuses</option>
                     </select>
                 </div>
-
-                <!-- Engineer Filter -->
                 <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border border-corporate-primary/30 focus-within:ring-2 focus-within:ring-corporate-primary/20 bg-blue-50/30">
                     <i class="fa-solid fa-user-tie text-corporate-primary text-xs"></i>
                     <select id="engineerFilter" onchange="filterData()" class="text-sm border-none bg-transparent focus:ring-0 font-semibold text-corporate-primary cursor-pointer outline-none w-full sm:w-auto min-w-[140px]">
@@ -127,13 +87,13 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
             <div id="card-All" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-corporate-primary relative overflow-hidden group ring-2 ring-corporate-primary scale-[1.02]" onclick="filterByKpi('All')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-corporate-primary transition-transform group-hover:scale-110"><i class="fa-solid fa-bars-progress text-6xl"></i></div>
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">Total Issues</p>
                 <div class="flex items-end justify-between mt-2">
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-800 leading-none" id="kpi-total">0</h3>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded border border-blue-100"><i class="fa-solid fa-chart-line mr-1"></i>Workload</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded border border-blue-100">Workload</span>
                 </div>
             </div>
             
@@ -142,17 +102,16 @@
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">IN PROGRESS</p>
                 <div class="flex items-end justify-between mt-2">
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-800 leading-none" id="kpi-progress">0</h3>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-100"><i class="fa-solid fa-gears mr-1"></i>Active</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-100">Active</span>
                 </div>
             </div>
 
-            <!-- New In Review Card -->
             <div id="card-In-Review" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-indigo-500 relative overflow-hidden group opacity-70 hover:opacity-100 hover:-translate-y-1" onclick="filterByKpi('In Review')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-indigo-500 transition-transform group-hover:scale-110"><i class="fa-solid fa-magnifying-glass-chart text-6xl"></i></div>
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">IN REVIEW</p>
                 <div class="flex items-end justify-between mt-2">
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-800 leading-none" id="kpi-review">0</h3>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded border border-indigo-100"><i class="fa-solid fa-eye mr-1"></i>Pending</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">Pending</span>
                 </div>
             </div>
             
@@ -161,7 +120,7 @@
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">PARENT CRs</p>
                 <div class="flex items-end justify-between mt-2">
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-800 leading-none" id="kpi-parent">0</h3>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-1 rounded border border-purple-100"><i class="fa-solid fa-crown mr-1"></i>Main</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-1 rounded border border-purple-100">Main</span>
                 </div>
             </div>
 
@@ -170,7 +129,7 @@
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">High Priority</p>
                 <div class="flex items-end justify-between mt-2">
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-800 leading-none" id="kpi-critical">0</h3>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-red-700 bg-red-50 px-2 py-1 rounded border border-red-100"><i class="fa-solid fa-fire mr-1"></i>Alert</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-red-700 bg-red-50 px-2 py-1 rounded border border-red-100">Alert</span>
                 </div>
             </div>
 
@@ -179,7 +138,17 @@
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">TO DO</p>
                 <div class="flex items-end justify-between mt-2">
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-800 leading-none" id="kpi-todo">0</h3>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200"><i class="fa-solid fa-pause mr-1"></i>Backlog</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">Backlog</span>
+                </div>
+            </div>
+            
+            <!-- OVERDUE CARD (7th Button) -->
+            <div id="card-Overdue" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-rose-500 relative overflow-hidden group opacity-70 hover:opacity-100 hover:-translate-y-1" onclick="filterByKpi('Overdue')">
+                <div class="absolute -right-2 -top-2 opacity-5 text-rose-500 transition-transform group-hover:scale-110"><i class="fa-solid fa-clock-rotate-left text-6xl"></i></div>
+                <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">OVERDUE</p>
+                <div class="flex items-end justify-between mt-2">
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-800 leading-none" id="kpi-overdue">0</h3>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-1 rounded border border-rose-100">Late</span>
                 </div>
             </div>
         </div>
@@ -223,15 +192,12 @@
                     <span id="currentTableFilterLabel" class="text-[10px] font-bold bg-corporate-primary text-white px-2 py-0.5 rounded shadow-sm ml-2">Filtered: All</span>
                 </h3>
                 <div class="flex items-center gap-4 flex-wrap">
-                    <!-- Specific Parent CR Filter -->
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-diagram-project text-purple-500 text-xs"></i>
                         <select id="specificParentFilter" onchange="filterData()" class="text-xs font-semibold border border-slate-300 rounded-md px-3 py-1.5 bg-slate-50 hover:bg-white focus:ring-1 focus:ring-corporate-primary outline-none transition-colors cursor-pointer text-slate-700 min-w-[150px] max-w-[200px]">
                             <option value="All">All Parent CRs...</option>
                         </select>
                     </div>
-
-                    <!-- Parent Status Filter -->
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-filter text-slate-400 text-xs"></i>
                         <select id="parentStatusFilter" onchange="filterData()" class="text-xs font-semibold border border-slate-300 rounded-md px-3 py-1.5 bg-slate-50 hover:bg-white focus:ring-1 focus:ring-corporate-primary outline-none transition-colors cursor-pointer text-slate-700">
@@ -254,7 +220,6 @@
                             <th scope="col" class="px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider w-36">Assignee</th>
                             <th scope="col" class="px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider w-28">Due Date</th>
                             <th scope="col" class="px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider w-24">Priority</th>
-                            <!-- Add Status Filter inside Table Header -->
                             <th scope="col" class="px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider w-36">
                                 <div class="flex items-center gap-1.5">
                                     Status
@@ -265,14 +230,11 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody id="taskTableBody" class="bg-white divide-y divide-slate-100">
-                        <!-- Rows injected via JS -->
-                    </tbody>
+                    <tbody id="taskTableBody" class="bg-white divide-y divide-slate-100"></tbody>
                 </table>
                 <div id="emptyState" class="flex-col items-center justify-center py-20 text-slate-400 bg-white hidden">
                     <i class="fa-solid fa-satellite-dish text-5xl mb-4 text-slate-200"></i>
                     <p class="text-sm font-semibold text-slate-500">No data available.</p>
-                    <p class="text-xs text-slate-400 mt-1">Please sync your Jira Google Sheet data to populate the dashboard.</p>
                 </div>
             </div>
         </div>
@@ -295,62 +257,33 @@
 
         const generateId = () => Math.random().toString(36).substr(2, 9);
         
-        // Status checks (Updated to separate "In Review")
-        const isNew = s => {
-            const st = s.toLowerCase();
-            return st.includes('todo') || st.includes('to do') || st.includes('new') || st.includes('open') || st.includes('backlog');
-        };
-        const isProg = s => {
-            const st = s.toLowerCase();
-            return st.includes('progress') || st.includes('active') || st.includes('execution');
-        };
-        const isReview = s => {
-            const st = s.toLowerCase();
-            return st.includes('review') || st.includes('approval') || st.includes('waiting') || st.includes('pending') || st.includes('hold');
-        };
-        const isComp = s => {
-            const st = s.toLowerCase();
-            return st.includes('done') || st.includes('complete') || st.includes('closed') || st.includes('resolved') || st.includes('cancel');
-        };
+        const isNew = s => { const st = s.toLowerCase(); return st.includes('todo') || st.includes('to do') || st.includes('new') || st.includes('open') || st.includes('backlog'); };
+        const isProg = s => { const st = s.toLowerCase(); return st.includes('progress') || st.includes('active') || st.includes('execution'); };
+        const isReview = s => { const st = s.toLowerCase(); return st.includes('review') || st.includes('approval') || st.includes('waiting') || st.includes('pending') || st.includes('hold'); };
+        const isComp = s => { const st = s.toLowerCase(); return st.includes('done') || st.includes('complete') || st.includes('closed') || st.includes('resolved') || st.includes('cancel'); };
 
-        // Date evaluation logic
         function evaluateDateStatus(dateStr, status) {
             if (isComp(status) || !dateStr || dateStr.trim() === "" || dateStr === "TBD" || dateStr === "N/A") return 'Normal';
-            
             let d = new Date(dateStr);
             if (isNaN(d.getTime())) return 'Normal';
-            
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            d.setHours(0, 0, 0, 0);
-            
+            today.setHours(0, 0, 0, 0); d.setHours(0, 0, 0, 0);
             if (d < today) return 'Overdue';
-            
-            const diffTime = Math.abs(d - today);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-            
+            const diffDays = Math.ceil(Math.abs(d - today) / (1000 * 60 * 60 * 24)); 
             if (diffDays <= 14) return 'At Risk';
             return 'Normal';
         }
 
-        // CSV Parser
         function parseCSV(text) {
-            const rows = [];
-            let row = [];
-            let inQuotes = false;
-            let currentVal = '';
+            const rows = []; let row = []; let inQuotes = false; let currentVal = '';
             for (let i = 0; i < text.length; i++) {
                 let char = text[i];
                 if (char === '"') {
-                    if (inQuotes && text[i+1] === '"') { currentVal += '"'; i++; } 
-                    else { inQuotes = !inQuotes; }
+                    if (inQuotes && text[i+1] === '"') { currentVal += '"'; i++; } else { inQuotes = !inQuotes; }
                 }
                 else if (char === ',' && !inQuotes) { row.push(currentVal.trim()); currentVal = ''; }
-                else if (char === '\n' && !inQuotes) {
-                    row.push(currentVal.trim());
-                    if(row.join('') !== '') rows.push(row);
-                    row = []; currentVal = '';
-                } else if (char !== '\r') { currentVal += char; }
+                else if (char === '\n' && !inQuotes) { row.push(currentVal.trim()); if(row.join('') !== '') rows.push(row); row = []; currentVal = ''; }
+                else if (char !== '\r') { currentVal += char; }
             }
             if (currentVal !== '') row.push(currentVal.trim());
             if (row.length > 0 && row.join('') !== '') rows.push(row);
@@ -358,93 +291,58 @@
         }
 
         function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) { processCSV(e.target.result, file.name); };
             reader.readAsText(file);
         }
 		
-        // 🚀 Smart Live Sync from Google Sheet
 		async function loadGoogleSheet() {
             showToast("Fetching data from Google Sheet...", false);
 			const apiUrl = "https://script.google.com/macros/s/AKfycbyvixx6lSej0VjTYlu-Fuj4kLZxRF-R7TBZU1tOaUnlWzVIaaJa0_P5x1k14VZw6KOP/exec";
-			
             try {
-				const response = await fetch(apiUrl);
-				const rows = await response.json();
-				
+				const response = await fetch(apiUrl); const rows = await response.json();
 				const newHash = JSON.stringify(rows);
-
-				if(newHash === lastDataHash){
-
-					console.log("No changes detected");
-
-					return;
-				}
-
+				if(newHash === lastDataHash) return;
 				lastDataHash = newHash;
 
 				taskData = rows.map(r => {
-                    // 🛠️ SMART PARENT DETECTION: Scan all possible columns for parent CR
                     let parentVal = "";
                     for (const key in r) {
                         const lowerKey = key.toLowerCase().trim();
-                        // สแกนหาชื่อคอลัมน์ Parent ยอดฮิตในระบบ Jira
                         if (lowerKey === "parent" || lowerKey === "parent link" || lowerKey === "epic link" || lowerKey === "parent cr" || lowerKey === "parent issue" || lowerKey === "custom field (parent link)" || lowerKey === "parent id") {
-                            parentVal = r[key];
-                            break;
+                            parentVal = r[key]; break;
                         }
                     }
-                    // Fallback: ถ้ายังไม่เจอ ให้กวาดหาคำว่า parent หรือ epic จากทุกคอลัมน์
                     if (!parentVal) {
                         for (const key in r) {
-                            const lowerKey = key.toLowerCase().trim();
-                            if (lowerKey.includes("parent") || lowerKey.includes("epic")) {
-                                parentVal = r[key];
-                                break;
+                            if (key.toLowerCase().trim().includes("parent") || key.toLowerCase().trim().includes("epic")) {
+                                parentVal = r[key]; break;
                             }
                         }
                     }
-                    
-                    // แปลงค่าให้เป็น Text เสมอ เพื่อป้องกัน API ส่งค่ามาเป็น Object
                     if (parentVal !== null && parentVal !== undefined) {
                         parentVal = String(parentVal).trim();
                         if (parentVal.toUpperCase() === 'N/A' || parentVal === '-') parentVal = "";
-                    } else {
-                        parentVal = "";
-                    }
+                    } else { parentVal = ""; }
 
-                    // 🛠️ DUE DATE FORMATTING: ตัดเวลา T17:00:00.000Z ทิ้ง ให้เหลือแค่วันที่
                     let dueDateVal = r["Due Date"] || r["Due date"] || r["Custom field (Due Date)"] || "";
-                    if (dueDateVal && typeof dueDateVal === 'string' && dueDateVal.includes("T")) {
-                        dueDateVal = dueDateVal.split("T")[0];
-                    }
+                    if (dueDateVal && typeof dueDateVal === 'string' && dueDateVal.includes("T")) dueDateVal = dueDateVal.split("T")[0];
 
 					return {
-						id: generateId(),
-						jira: r["Issue Key"] || r["Key"] || r["Issue key"] || "",
-						parent: parentVal, // ใส่ค่า Parent ที่ถูกคลีนแล้ว
-						name: r["Summary"] || r["Title"] || "Untitled",
-						assignee: r["Assignee"] || "Unassigned",
-						priority: r["Priority"] || "Medium",
-						status: r["Status"] || "TODO",
-						dueDate: dueDateVal, // ใส่ค่า Due Date ที่ตัดเวลาทิ้งแล้ว
+						id: generateId(), jira: r["Issue Key"] || r["Key"] || r["Issue key"] || "",
+						parent: parentVal, name: r["Summary"] || r["Title"] || "Untitled",
+						assignee: r["Assignee"] || "Unassigned", priority: r["Priority"] || "Medium",
+						status: r["Status"] || "TODO", dueDate: dueDateVal,
 						changeType: r["Issue/Change Type"] || r["Change Type"] || r["Issue Type"] || ""
 					};
 				});
 
-				updateFiltersUI(taskData);
-                resetKpiUI();
-				filterData();
-                
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+				updateFiltersUI(taskData); resetKpiUI(); filterData();
+                const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 document.getElementById('lastUpdatedText').innerHTML = `<span class="text-corporate-success font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Live Data Synced</span> <span class="text-slate-400 text-xs ml-2">Last updated: ${timeStr}</span>`;
-
 				showToast("Google Sheet loaded successfully!");
 			} catch (err) {
-				console.error(err);
 				showToast("Failed to load Google Sheet. Check your connection or API URL.", true);
 			}
 		}		
@@ -452,10 +350,7 @@
         function processCSV(text, sourceName) {
             const rows = parseCSV(text);
             if(rows.length < 2) { showToast("No data found in the file.", true); return; }
-
-            const newData = [];
-            const headers = rows[0].map(h => h.toLowerCase().trim());
-            
+            const newData = []; const headers = rows[0].map(h => h.toLowerCase().trim());
             let iKey = headers.findIndex(h => h === "key" || h === "issue key");
             let iSum = headers.findIndex(h => h === "summary" || h === "title");
             let iAssign = headers.findIndex(h => h === "assignee");
@@ -464,52 +359,34 @@
             let iParent = headers.findIndex(h => h === "parent" || h === "parent link" || h === "epic link" || h === "parent issue" || h.includes("parent"));
             let iDue = headers.findIndex(h => h === "due date" || h === "due" || h.includes("due date"));
             let iChangeType = headers.findIndex(h => h === "issue/change type" || h === "change type" || h === "issue type" || h.includes("change type"));
-            
             if(iKey === -1) iKey = 0; if(iSum === -1) iSum = 1;
 
             for(let i = 1; i < rows.length; i++) {
-                const r = rows[i];
-                if(r.length < 3 || !r[iKey]) continue; 
-
+                const r = rows[i]; if(r.length < 3 || !r[iKey]) continue; 
                 let assigneeName = (iAssign !== -1 && r[iAssign]) ? r[iAssign] : "Unassigned";
                 if(assigneeName.includes('@')) assigneeName = assigneeName.split('@')[0];
                 assigneeName = assigneeName.replace(/\b\w/g, l => l.toUpperCase()).replace('.', ' ');
-
                 let parentName = (iParent !== -1 && r[iParent]) ? r[iParent].trim() : "";
                 if (parentName.toUpperCase() === 'N/A' || parentName === '-') parentName = "";
-
                 let dueDateVal = (iDue !== -1 && r[iDue]) ? r[iDue].trim() : "";
                 if(dueDateVal && dueDateVal.includes("T")) dueDateVal = dueDateVal.split("T")[0]; 
-                
                 let changeTypeVal = (iChangeType !== -1 && r[iChangeType]) ? r[iChangeType].trim() : "";
                 if(changeTypeVal.toLowerCase() === "n/a" || changeTypeVal.toLowerCase() === "tbd" || changeTypeVal === "-") changeTypeVal = "";
 
                 newData.push({
-                    id: generateId(),
-                    jira: r[iKey] || "",
-                    parent: parentName,
-                    name: r[iSum] || "Untitled Task",
-                    assignee: assigneeName,
-                    priority: (iPri !== -1 && r[iPri]) ? r[iPri] : "Medium",
-                    status: (iStat !== -1 && r[iStat]) ? r[iStat] : "TODO",
-                    dueDate: dueDateVal,
-                    changeType: changeTypeVal
+                    id: generateId(), jira: r[iKey] || "", parent: parentName, name: r[iSum] || "Untitled Task",
+                    assignee: assigneeName, priority: (iPri !== -1 && r[iPri]) ? r[iPri] : "Medium",
+                    status: (iStat !== -1 && r[iStat]) ? r[iStat] : "TODO", dueDate: dueDateVal, changeType: changeTypeVal
                 });
             }
-
             if(newData.length > 0) {
-                taskData = newData;
-                updateFiltersUI(taskData);
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                document.getElementById('lastUpdatedText').innerHTML = `<span class="text-corporate-success font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Data Loaded</span> <span class="text-slate-400 text-xs ml-2">Last updated: ${timeStr} from ${sourceName}</span>`;
-                resetKpiUI();
-                filterData();
-                showToast("Data Synced Successfully!");
+                taskData = newData; updateFiltersUI(taskData);
+                const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                document.getElementById('lastUpdatedText').innerHTML = `<span class="text-corporate-success font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Data Loaded</span> <span class="text-slate-400 text-xs ml-2">Last updated: ${timeStr}</span>`;
+                resetKpiUI(); filterData(); showToast("Data Synced Successfully!");
             }
         }
 
-        // Sync main status dropdown to table dropdown
         function syncTableFilter() {
             const mainVal = document.getElementById('statusFilter').value;
             const tableDrop = document.getElementById('tableStatusFilter');
@@ -517,21 +394,18 @@
         }
 
         function updateFiltersUI(data) {
-            const engSelect = document.getElementById('engineerFilter');
-            const currentEng = engSelect.value;
+            const engSelect = document.getElementById('engineerFilter'); const currentEng = engSelect.value;
             engSelect.innerHTML = '<option value="All">All Engineers</option>';
             const engineers = [...new Set(data.map(item => item.assignee))].filter(Boolean).sort();
             engineers.forEach(eng => { engSelect.add(new Option(eng, eng)); });
             if (engineers.includes(currentEng)) engSelect.value = currentEng;
 
-            const statSelect = document.getElementById('statusFilter');
-            const currentStat = statSelect.value;
+            const statSelect = document.getElementById('statusFilter'); const currentStat = statSelect.value;
             statSelect.innerHTML = '<option value="All">All Statuses</option>';
             const statuses = [...new Set(data.map(item => item.status))].filter(Boolean).sort();
             statuses.forEach(s => { statSelect.add(new Option(s, s)); });
             if (statuses.includes(currentStat)) statSelect.value = currentStat;
 
-            // Update Table Header Dropdown
             const tableStatSelect = document.getElementById('tableStatusFilter');
             if(tableStatSelect) {
                 tableStatSelect.innerHTML = '<option value="All">All</option>';
@@ -539,8 +413,7 @@
                 if (statuses.includes(currentStat)) tableStatSelect.value = currentStat;
             }
 
-            const parentSelect = document.getElementById('specificParentFilter');
-            const currentParent = parentSelect.value;
+            const parentSelect = document.getElementById('specificParentFilter'); const currentParent = parentSelect.value;
             parentSelect.innerHTML = '<option value="All">All Parent CRs...</option>';
             const parents = [...new Set(data.map(item => item.parent))].filter(p => p && p.trim() !== "" && p.toUpperCase() !== "N/A").sort();
             parents.forEach(p => { parentSelect.add(new Option(p, p)); });
@@ -550,7 +423,7 @@
         function resetKpiUI() {
             currentKpiFilter = 'All';
             document.querySelectorAll('.kpi-card').forEach(card => {
-                card.classList.remove('ring-2', 'ring-offset-2', 'scale-[1.02]', 'opacity-70', 'opacity-100', 'ring-corporate-primary', 'ring-slate-400', 'ring-amber-500', 'ring-indigo-500', 'ring-corporate-danger', 'ring-purple-500', 'shadow-md');
+                card.classList.remove('ring-2', 'ring-offset-2', 'scale-[1.02]', 'opacity-70', 'opacity-100', 'ring-corporate-primary', 'ring-slate-400', 'ring-amber-500', 'ring-indigo-500', 'ring-corporate-danger', 'ring-purple-500', 'ring-rose-500', 'shadow-md');
                 card.classList.add('opacity-70', 'hover:opacity-100', 'hover:-translate-y-1'); 
             });
             const cardAll = document.getElementById('card-All');
@@ -566,7 +439,7 @@
             currentKpiFilter = (currentKpiFilter === kpiType) ? 'All' : kpiType;
             
             document.querySelectorAll('.kpi-card').forEach(card => {
-                card.classList.remove('ring-2', 'scale-[1.02]', 'opacity-70', 'opacity-100', 'ring-corporate-primary', 'ring-slate-400', 'ring-amber-500', 'ring-indigo-500', 'ring-corporate-danger', 'ring-purple-500', 'shadow-md');
+                card.classList.remove('ring-2', 'scale-[1.02]', 'opacity-70', 'opacity-100', 'ring-corporate-primary', 'ring-slate-400', 'ring-amber-500', 'ring-indigo-500', 'ring-corporate-danger', 'ring-purple-500', 'ring-rose-500', 'shadow-md');
                 card.classList.add('opacity-70', 'hover:opacity-100', 'hover:-translate-y-1'); 
             });
             
@@ -581,45 +454,20 @@
                 selectedCard.classList.remove('opacity-70', 'hover:opacity-100', 'hover:-translate-y-1');
                 selectedCard.classList.add('ring-2', 'scale-[1.02]', 'shadow-md');
                 
-                if(currentKpiFilter === 'Todo') { 
-                    selectedCard.classList.add('ring-slate-400'); 
-                    filterLabel.className = "text-[10px] font-bold bg-slate-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; 
-                    chartLabel.className = "text-[10px] text-white bg-slate-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide";
-                }
-                else if(currentKpiFilter === 'In Progress') { 
-                    selectedCard.classList.add('ring-amber-500'); 
-                    filterLabel.className = "text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; 
-                    chartLabel.className = "text-[10px] text-white bg-amber-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide";
-                }
-                else if(currentKpiFilter === 'In Review') { 
-                    selectedCard.classList.add('ring-indigo-500'); 
-                    filterLabel.className = "text-[10px] font-bold bg-indigo-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; 
-                    chartLabel.className = "text-[10px] text-white bg-indigo-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide";
-                }
-                else if(currentKpiFilter === 'Critical') { 
-                    selectedCard.classList.add('ring-corporate-danger'); 
-                    filterLabel.className = "text-[10px] font-bold bg-corporate-danger text-white px-2 py-0.5 rounded shadow-sm ml-2"; 
-                    chartLabel.className = "text-[10px] text-white bg-corporate-danger px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide";
-                }
-                else if(currentKpiFilter === 'Parent') { 
-                    selectedCard.classList.add('ring-purple-500'); 
-                    filterLabel.className = "text-[10px] font-bold bg-purple-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; 
-                    chartLabel.className = "text-[10px] text-white bg-purple-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide";
-                }
-                else if(currentKpiFilter === 'All') { 
-                    selectedCard.classList.add('ring-corporate-primary'); 
-                    filterLabel.className = "text-[10px] font-bold bg-corporate-primary text-white px-2 py-0.5 rounded shadow-sm ml-2"; 
-                    chartLabel.className = "text-[10px] text-white bg-corporate-primary px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide";
-                }
+                if(currentKpiFilter === 'Todo') { selectedCard.classList.add('ring-slate-400'); filterLabel.className = "text-[10px] font-bold bg-slate-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; chartLabel.className = "text-[10px] text-white bg-slate-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide"; }
+                else if(currentKpiFilter === 'In Progress') { selectedCard.classList.add('ring-amber-500'); filterLabel.className = "text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; chartLabel.className = "text-[10px] text-white bg-amber-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide"; }
+                else if(currentKpiFilter === 'In Review') { selectedCard.classList.add('ring-indigo-500'); filterLabel.className = "text-[10px] font-bold bg-indigo-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; chartLabel.className = "text-[10px] text-white bg-indigo-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide"; }
+                else if(currentKpiFilter === 'Critical') { selectedCard.classList.add('ring-corporate-danger'); filterLabel.className = "text-[10px] font-bold bg-corporate-danger text-white px-2 py-0.5 rounded shadow-sm ml-2"; chartLabel.className = "text-[10px] text-white bg-corporate-danger px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide"; }
+                else if(currentKpiFilter === 'Parent') { selectedCard.classList.add('ring-purple-500'); filterLabel.className = "text-[10px] font-bold bg-purple-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; chartLabel.className = "text-[10px] text-white bg-purple-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide"; }
+                else if(currentKpiFilter === 'Overdue') { selectedCard.classList.add('ring-rose-500'); filterLabel.className = "text-[10px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded shadow-sm ml-2"; chartLabel.className = "text-[10px] text-white bg-rose-500 px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide"; }
+                else if(currentKpiFilter === 'All') { selectedCard.classList.add('ring-corporate-primary'); filterLabel.className = "text-[10px] font-bold bg-corporate-primary text-white px-2 py-0.5 rounded shadow-sm ml-2"; chartLabel.className = "text-[10px] text-white bg-corporate-primary px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wide"; }
             }
             filterData();
         }
 
         function filterData() {
             if(taskData.length === 0) {
-                document.getElementById('emptyState').classList.remove('hidden');
-                document.getElementById('emptyState').classList.add('flex');
-                return;
+                document.getElementById('emptyState').classList.remove('hidden'); document.getElementById('emptyState').classList.add('flex'); return;
             }
             
             const selectedAssignee = document.getElementById('engineerFilter').value;
@@ -632,22 +480,21 @@
                 if (isComp(t.status) && selectedStatus === "All") match = false; 
                 if (selectedAssignee !== "All" && t.assignee !== selectedAssignee) match = false;
                 if (selectedStatus !== "All" && t.status !== selectedStatus) match = false;
-                
                 const hasParent = t.parent && t.parent.trim() !== "" && t.parent.trim().toUpperCase() !== "N/A";
                 if (parentStatus === "HasParent" && !hasParent) match = false;
                 if (parentStatus === "NoParent" && hasParent) match = false;
                 if (specificParent !== "All" && t.parent !== specificParent) match = false;
-
                 return match;
             });
             
-            // Update 6 KPI Cards
+            // Update 7 KPI Cards
             document.getElementById('kpi-total').innerText = filteredByDropdowns.length;
             document.getElementById('kpi-todo').innerText = filteredByDropdowns.filter(t => isNew(t.status)).length;
             document.getElementById('kpi-progress').innerText = filteredByDropdowns.filter(t => isProg(t.status)).length;
             document.getElementById('kpi-review').innerText = filteredByDropdowns.filter(t => isReview(t.status)).length;
             document.getElementById('kpi-critical').innerText = filteredByDropdowns.filter(t => t.priority.toLowerCase() === "high" || t.priority.toLowerCase() === "highest").length;
             document.getElementById('kpi-parent').innerText = filteredByDropdowns.filter(t => !t.parent || t.parent.trim() === "" || t.parent.toUpperCase() === "N/A").length;
+            document.getElementById('kpi-overdue').innerText = filteredByDropdowns.filter(t => evaluateDateStatus(t.dueDate, t.status) === 'Overdue').length;
             
             let fullyFilteredData = filteredByDropdowns;
             if (currentKpiFilter === 'Todo') fullyFilteredData = fullyFilteredData.filter(t => isNew(t.status));
@@ -655,43 +502,29 @@
             else if (currentKpiFilter === 'In Review') fullyFilteredData = fullyFilteredData.filter(t => isReview(t.status));
             else if (currentKpiFilter === 'Critical') fullyFilteredData = fullyFilteredData.filter(t => t.priority.toLowerCase() === "high" || t.priority.toLowerCase() === "highest");
             else if (currentKpiFilter === 'Parent') fullyFilteredData = fullyFilteredData.filter(t => !t.parent || t.parent.trim() === "" || t.parent.toUpperCase() === "N/A");
+            else if (currentKpiFilter === 'Overdue') fullyFilteredData = fullyFilteredData.filter(t => evaluateDateStatus(t.dueDate, t.status) === 'Overdue');
             
             renderTable(fullyFilteredData);
-            renderWorkloadChart(fullyFilteredData, selectedAssignee, filteredByDropdowns);
+            renderWorkloadChart(fullyFilteredData, selectedAssignee);
             renderStatusChart(fullyFilteredData);
             renderChangeTypeChart(fullyFilteredData);
         }
 
         function showToast(msg, isError = false) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').innerText = msg;
+            const toast = document.getElementById('toast'); document.getElementById('toastMessage').innerText = msg;
             toast.querySelector('i').className = isError ? "fa-solid fa-circle-exclamation text-corporate-danger text-xl" : "fa-solid fa-circle-check text-corporate-success text-xl";
             toast.classList.remove('translate-y-24', 'opacity-0');
             setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3500);
         }
 
         function getStatusBadge(status) {
-            const s = status.toUpperCase().trim();
-            let bg, text, border, icon;
-            
-            if (s.includes('TODO') || s.includes('TO DO') || s === 'OPEN' || s === 'NEW' || s.includes('BACKLOG')) { 
-                bg='bg-slate-100'; text='text-slate-600'; border='border-slate-300'; icon=''; 
-            }
-            else if (s.includes('PROGRESS') || s === 'ACTIVE' || s.includes('EXECUTION')) { 
-                bg='bg-amber-50'; text='text-amber-700'; border='border-amber-200'; icon='<i class="fa-solid fa-spinner fa-spin mr-1"></i>'; 
-            }
-            else if (s.includes('REVIEW') || s.includes('APPROVAL') || s.includes('WAITING') || s.includes('PENDING') || s.includes('HOLD')) { 
-                bg='bg-indigo-50'; text='text-indigo-700'; border='border-indigo-200'; icon='<i class="fa-solid fa-magnifying-glass mr-1"></i>'; 
-            }
-            else if (s.includes('DONE') || s.includes('COMPLETE') || s === 'CLOSED' || s === 'RESOLVED') { 
-                bg='bg-emerald-50'; text='text-emerald-700'; border='border-emerald-200'; icon='<i class="fa-solid fa-check mr-1"></i>'; 
-            }
-            else if (s.includes('CANCEL') || s.includes('REJECT') || s.includes('FAIL')) { 
-                bg='bg-rose-50'; text='text-rose-700'; border='border-rose-200'; icon='<i class="fa-solid fa-xmark mr-1"></i>'; 
-            }
-            else { 
-                bg='bg-slate-50'; text='text-slate-700'; border='border-slate-200'; icon='';
-            }
+            const s = status.toUpperCase().trim(); let bg, text, border, icon;
+            if (s.includes('TODO') || s.includes('TO DO') || s === 'OPEN' || s === 'NEW' || s.includes('BACKLOG')) { bg='bg-slate-100'; text='text-slate-600'; border='border-slate-300'; icon=''; }
+            else if (s.includes('PROGRESS') || s === 'ACTIVE' || s.includes('EXECUTION')) { bg='bg-amber-50'; text='text-amber-700'; border='border-amber-200'; icon='<i class="fa-solid fa-spinner fa-spin mr-1"></i>'; }
+            else if (s.includes('REVIEW') || s.includes('APPROVAL') || s.includes('WAITING') || s.includes('PENDING') || s.includes('HOLD')) { bg='bg-indigo-50'; text='text-indigo-700'; border='border-indigo-200'; icon='<i class="fa-solid fa-magnifying-glass mr-1"></i>'; }
+            else if (s.includes('DONE') || s.includes('COMPLETE') || s === 'CLOSED' || s === 'RESOLVED') { bg='bg-emerald-50'; text='text-emerald-700'; border='border-emerald-200'; icon='<i class="fa-solid fa-check mr-1"></i>'; }
+            else if (s.includes('CANCEL') || s.includes('REJECT') || s.includes('FAIL')) { bg='bg-rose-50'; text='text-rose-700'; border='border-rose-200'; icon='<i class="fa-solid fa-xmark mr-1"></i>'; }
+            else { bg='bg-slate-50'; text='text-slate-700'; border='border-slate-200'; icon=''; }
             return `<span class="px-2.5 py-1 inline-flex text-[9px] sm:text-[10px] font-bold rounded ${bg} ${text} border ${border} uppercase tracking-wider shadow-sm w-max">${icon}${status}</span>`;
         }
 
@@ -704,38 +537,27 @@
         }
 
         function renderTable(data) {
-            const tbody = document.getElementById('taskTableBody');
-            const emptyState = document.getElementById('emptyState');
+            const tbody = document.getElementById('taskTableBody'); const emptyState = document.getElementById('emptyState');
             tbody.innerHTML = '';
             
             if(data.length === 0) {
                 emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
             } else {
                 emptyState.classList.add('hidden'); emptyState.classList.remove('flex');
-                
                 const priorityWeight = { "highest": 1, "high": 2, "medium": 3, "major": 3, "low": 4, "lowest": 5, "minor": 5 };
                 data.sort((a,b) => (priorityWeight[a.priority.toLowerCase()] || 99) - (priorityWeight[b.priority.toLowerCase()] || 99));
 
                 data.forEach(task => {
-                    const jiraRegex = /([A-Z]+-\d+)/i;
-                    
-                    let jiraHTML = task.jira;
+                    const jiraRegex = /([A-Z]+-\d+)/i; let jiraHTML = task.jira;
                     if (task.jira && task.jira.match(jiraRegex)) {
                         const crNum = task.jira.match(jiraRegex)[1].toUpperCase();
                         jiraHTML = `<a href="https://datamars.atlassian.net/browse/${crNum}" target="_blank" class="text-corporate-primary hover:text-blue-800 font-bold flex items-center gap-1.5 group-hover:underline">${crNum} <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400 group-hover:text-blue-800 transition-colors"></i></a>`;
                     }
-
                     let parentHTML = ''; 
                     if (task.parent && task.parent.trim() !== "" && task.parent.toUpperCase() !== "N/A") {
-                        let parentStatusClass = 'bg-slate-100 border-slate-200 text-slate-600';
-                        let statusIcon = '';
+                        let parentStatusClass = 'bg-slate-100 border-slate-200 text-slate-600'; let statusIcon = '';
                         const parentTaskData = taskData.find(t => t.jira === task.parent.trim());
-                        
-                        if(parentTaskData && isProg(parentTaskData.status)) {
-                            parentStatusClass = 'bg-amber-50 border-amber-200 text-amber-700 shadow-sm';
-                            statusIcon = '<i class="fa-solid fa-spinner fa-spin text-[8px] mr-1"></i>';
-                        }
-                        
+                        if(parentTaskData && isProg(parentTaskData.status)) { parentStatusClass = 'bg-amber-50 border-amber-200 text-amber-700 shadow-sm'; statusIcon = '<i class="fa-solid fa-spinner fa-spin text-[8px] mr-1"></i>'; }
                         if (task.parent.match(jiraRegex)) {
                             const pNum = task.parent.match(jiraRegex)[1].toUpperCase();
                             parentHTML = `<a href="https://datamars.atlassian.net/browse/${pNum}" target="_blank" class="${parentStatusClass} hover:text-purple-700 font-semibold flex items-center gap-1 hover:underline px-2 py-0.5 rounded border text-[10px] w-fit">${statusIcon}${pNum} <i class="fa-solid fa-link text-[8px] opacity-70"></i></a>`;
@@ -747,35 +569,23 @@
                     let dueDateHtml = `<span class="text-slate-400 text-xs">-</span>`;
                     if(task.dueDate) {
                         const dateStatus = evaluateDateStatus(task.dueDate, task.status);
-                        if(dateStatus === 'Overdue') {
-                            dueDateHtml = `<div class="flex flex-col"><span class="text-red-600 font-bold text-xs">${task.dueDate}</span><span class="text-[8px] font-bold text-white bg-red-500 px-1 py-0.5 rounded mt-0.5 w-max">OVERDUE</span></div>`;
-                        } else if (dateStatus === 'At Risk') {
-                            dueDateHtml = `<div class="flex flex-col"><span class="text-orange-500 font-bold text-xs">${task.dueDate}</span><span class="text-[8px] font-bold text-orange-700 bg-orange-100 px-1 py-0.5 rounded mt-0.5 w-max border border-orange-200"><i class="fa-solid fa-triangle-exclamation mr-1"></i>AT RISK</span></div>`;
-                        } else {
-                            dueDateHtml = `<span class="text-slate-700 font-medium text-xs">${task.dueDate}</span>`;
-                        }
+                        if(dateStatus === 'Overdue') { dueDateHtml = `<div class="flex flex-col"><span class="text-red-600 font-bold text-xs">${task.dueDate}</span><span class="text-[8px] font-bold text-white bg-red-500 px-1 py-0.5 rounded mt-0.5 w-max">OVERDUE</span></div>`; } 
+                        else if (dateStatus === 'At Risk') { dueDateHtml = `<div class="flex flex-col"><span class="text-orange-500 font-bold text-xs">${task.dueDate}</span><span class="text-[8px] font-bold text-orange-700 bg-orange-100 px-1 py-0.5 rounded mt-0.5 w-max border border-orange-200"><i class="fa-solid fa-triangle-exclamation mr-1"></i>AT RISK</span></div>`; } 
+                        else { dueDateHtml = `<span class="text-slate-700 font-medium text-xs">${task.dueDate}</span>`; }
                     }
 
                     const colors = ['bg-blue-100 text-blue-800 border-blue-200', 'bg-emerald-100 text-emerald-800 border-emerald-200', 'bg-purple-100 text-purple-800 border-purple-200', 'bg-pink-100 text-pink-800 border-pink-200', 'bg-indigo-100 text-indigo-800 border-indigo-200'];
-                    const colorIndex = task.assignee.length % colors.length;
-                    const colorClass = colors[colorIndex];
+                    const colorIndex = task.assignee.length % colors.length; const colorClass = colors[colorIndex];
                     const initial = task.assignee.charAt(0).toUpperCase();
-
                     const changeTypeHtml = task.changeType ? `<span class="bg-slate-100 border border-slate-200 px-2 py-1 rounded line-clamp-1 text-[10px] font-semibold text-slate-600">${task.changeType}</span>` : '';
 
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 group transition-colors";
+                    const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 group transition-colors";
                     tr.innerHTML = `
                         <td class="px-4 py-3 whitespace-nowrap text-sm h-[52px]">${parentHTML}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm">${jiraHTML}</td>
                         <td class="px-4 py-3 text-sm text-slate-700 font-medium leading-tight max-w-xs truncate" title="${task.name}">${task.name}</td>
                         <td class="px-4 py-3 whitespace-nowrap" title="${task.changeType}">${changeTypeHtml}</td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="h-6 w-6 rounded-full ${colorClass} flex items-center justify-center text-[10px] font-black mr-2 border shadow-sm">${initial}</div>
-                                <span class="text-xs text-slate-800 font-bold tracking-tight">${task.assignee}</span>
-                            </div>
-                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap"><div class="flex items-center"><div class="h-6 w-6 rounded-full ${colorClass} flex items-center justify-center text-[10px] font-black mr-2 border shadow-sm">${initial}</div><span class="text-xs text-slate-800 font-bold tracking-tight">${task.assignee}</span></div></td>
                         <td class="px-4 py-3 whitespace-nowrap">${dueDateHtml}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-xs">${getPriorityStyle(task.priority)}</td>
                         <td class="px-4 py-3 whitespace-nowrap">${getStatusBadge(task.status)}</td>
@@ -785,33 +595,46 @@
             }
         }
 
-        function renderWorkloadChart(fullyFilteredData, selectedAssignee, baseFilteredData) {
+        function renderWorkloadChart(fullyFilteredData, selectedAssignee) {
             const ctx = document.getElementById('workloadChart').getContext('2d');
             if (workloadChartInstance) workloadChartInstance.destroy();
 
-            let engineers = [...new Set(baseFilteredData.map(t => t.assignee))].filter(Boolean);
-            engineers.sort((a,b) => {
-                return baseFilteredData.filter(t => t.assignee === b).length - baseFilteredData.filter(t => t.assignee === a).length;
+            // 1. Calculate totals to dynamically enforce Pareto layout
+            const engineerCounts = {};
+            fullyFilteredData.forEach(t => {
+                if (t.assignee) engineerCounts[t.assignee] = (engineerCounts[t.assignee] || 0) + 1;
             });
+            
+            // 2. Sort descending strictly based on what is filtered
+            let engineers = Object.keys(engineerCounts).sort((a, b) => engineerCounts[b] - engineerCounts[a]);
             if (selectedAssignee !== "All") engineers = [selectedAssignee];
 
+            // 3. Stack distributions
             const newCounts = engineers.map(e => fullyFilteredData.filter(t => t.assignee === e && isNew(t.status)).length);
             const progCounts = engineers.map(e => fullyFilteredData.filter(t => t.assignee === e && isProg(t.status)).length);
             const reviewCounts = engineers.map(e => fullyFilteredData.filter(t => t.assignee === e && isReview(t.status)).length);
+            const compCounts = engineers.map(e => fullyFilteredData.filter(t => t.assignee === e && isComp(t.status)).length);
+            const otherCounts = engineers.map(e => fullyFilteredData.filter(t => 
+                t.assignee === e && !isNew(t.status) && !isProg(t.status) && !isReview(t.status) && !isComp(t.status)
+            ).length);
+
+            const datasets = [];
+            if(progCounts.some(c => c > 0)) datasets.push({ label: 'In Progress', data: progCounts, backgroundColor: `#f59e0b`, borderRadius: 4, barPercentage: 0.5 });
+            if(reviewCounts.some(c => c > 0)) datasets.push({ label: 'In Review', data: reviewCounts, backgroundColor: `#6366f1`, borderRadius: 4, barPercentage: 0.5 });
+            if(newCounts.some(c => c > 0)) datasets.push({ label: 'To Do', data: newCounts, backgroundColor: `#94a3b8`, borderRadius: 4, barPercentage: 0.5 });
+            if(compCounts.some(c => c > 0)) datasets.push({ label: 'Completed', data: compCounts, backgroundColor: `#10b981`, borderRadius: 4, barPercentage: 0.5 });
+            if(otherCounts.some(c => c > 0)) datasets.push({ label: 'Other', data: otherCounts, backgroundColor: `#64748b`, borderRadius: 4, barPercentage: 0.5 });
+
+            if(datasets.length === 0 && engineers.length > 0) {
+                const totalCounts = engineers.map(e => fullyFilteredData.filter(t => t.assignee === e).length);
+                datasets.push({ label: 'Total Tasks', data: totalCounts, backgroundColor: `#3b82f6`, borderRadius: 4, barPercentage: 0.5 });
+            }
 
             workloadChartInstance = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: engineers,
-                    datasets: [
-                        { label: 'In Progress', data: progCounts, backgroundColor: `#f59e0b`, borderRadius: 4, barPercentage: 0.5 },
-                        { label: 'In Review', data: reviewCounts, backgroundColor: `#6366f1`, borderRadius: 4, barPercentage: 0.5 },
-                        { label: 'To Do', data: newCounts, backgroundColor: `#94a3b8`, borderRadius: 4, barPercentage: 0.5 }
-                    ]
-                },
+                data: { labels: engineers, datasets: datasets },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
                     scales: {
                         x: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Inter', size: 11, weight: 'bold' }, color: '#475569' } },
                         y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1, font: { family: 'Inter', size: 10 } }, grid: { borderDash: [4, 4], color: '#f1f5f9' }, border: {display: false} }
@@ -830,32 +653,28 @@
 
             const statuses = ['In Progress', 'In Review', 'To Do', 'Completed'];
             const counts = [
-                data.filter(t => isProg(t.status)).length,
-                data.filter(t => isReview(t.status)).length,
-                data.filter(t => isNew(t.status)).length,
-                data.filter(t => isComp(t.status)).length
+                data.filter(t => isProg(t.status)).length, data.filter(t => isReview(t.status)).length,
+                data.filter(t => isNew(t.status)).length, data.filter(t => isComp(t.status)).length
             ];
             
+            const otherCount = data.filter(t => !isProg(t.status) && !isReview(t.status) && !isNew(t.status) && !isComp(t.status)).length;
+            if (otherCount > 0) { statuses.push('Other'); counts.push(otherCount); }
+            
+            const bgColors = ['#f59e0b', '#6366f1', '#94a3b8', '#10b981'];
+            if (otherCount > 0) bgColors.push('#64748b');
+
             if(data.length === 0 || counts.every(c => c === 0)) {
-                statuses.push("No Data");
-                counts.push(1);
+                statuses.splice(0, statuses.length, "No Data"); counts.splice(0, counts.length, 1); bgColors.splice(0, bgColors.length, '#f1f5f9');
             }
 
             statusChartInstance = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    labels: statuses,
-                    datasets: [{
-                        data: counts,
-                        backgroundColor: (data.length === 0 || counts.every(c => c === 0)) ? ['#f1f5f9'] : ['#f59e0b', '#6366f1', '#94a3b8', '#10b981'],
-                        borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6
-                    }]
-                },
+                data: { labels: statuses, datasets: [{ data: counts, backgroundColor: bgColors, borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6 }] },
                 options: {
                     responsive: true, maintainAspectRatio: false, cutout: '70%',
                     plugins: {
-                        legend: { display: (data.length > 0 && !counts.every(c => c === 0)), position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: 'Inter', weight: 'bold' } } },
-                        tooltip: { enabled: (data.length > 0 && !counts.every(c => c === 0)), backgroundColor: 'rgba(30, 41, 59, 0.95)', padding: 10, cornerRadius: 8 }
+                        legend: { display: (data.length > 0 && statuses[0] !== "No Data"), position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, family: 'Inter', weight: 'bold' } } },
+                        tooltip: { enabled: (data.length > 0 && statuses[0] !== "No Data"), backgroundColor: 'rgba(30, 41, 59, 0.95)', padding: 10, cornerRadius: 8 }
                     }
                 }
             });
@@ -867,49 +686,31 @@
 
             const changeTypeCounts = {};
             data.forEach(t => {
-                if (t.changeType && t.changeType.trim() !== "" && t.changeType !== "-") {
-                    changeTypeCounts[t.changeType] = (changeTypeCounts[t.changeType] || 0) + 1;
-                }
+                if (t.changeType && t.changeType.trim() !== "" && t.changeType !== "-") { changeTypeCounts[t.changeType] = (changeTypeCounts[t.changeType] || 0) + 1; }
             });
-
             const sortedLabels = Object.keys(changeTypeCounts).sort((a, b) => changeTypeCounts[b] - changeTypeCounts[a]);
             const counts = sortedLabels.map(label => changeTypeCounts[label]);
-            
-            if(counts.length === 0 || counts.every(c => c === 0)) {
-                sortedLabels.push("No Data Available");
-                counts.push(1);
-            }
-
+            if(counts.length === 0 || counts.every(c => c === 0)) { sortedLabels.push("No Data Available"); counts.push(1); }
             const chartColors = ['#0ea5e9', '#ec4899', '#14b8a6', '#f59e0b', '#8b5cf6', '#64748b', '#ef4444'];
 
             changeTypeChartInstance = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    labels: sortedLabels,
-                    datasets: [{
-                        data: counts,
-                        backgroundColor: (counts.length === 1 && sortedLabels[0] === "No Data Available") ? ['#f1f5f9'] : chartColors,
-                        borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6
-                    }]
-                },
+                data: { labels: sortedLabels, datasets: [{ data: counts, backgroundColor: (counts.length === 1 && sortedLabels[0] === "No Data Available") ? ['#f1f5f9'] : chartColors, borderWidth: 3, borderColor: '#ffffff', hoverOffset: 6 }] },
                 options: {
                     responsive: true, maintainAspectRatio: false, cutout: '70%',
                     plugins: {
                         legend: { display: false }, 
                         tooltip: { 
                             enabled: !(counts.length === 1 && sortedLabels[0] === "No Data Available"), 
-                            backgroundColor: 'rgba(30, 41, 59, 0.95)', 
-                            padding: 10, cornerRadius: 8,
+                            backgroundColor: 'rgba(30, 41, 59, 0.95)', padding: 10, cornerRadius: 8,
                             callbacks: {
                                 label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) label += ': ';
+                                    let label = context.label || ''; if (label) label += ': ';
                                     if (context.parsed !== null) {
                                         let total = context.dataset.data.reduce((a, b) => a + b, 0);
                                         let percentage = Math.round((context.parsed / total) * 100);
                                         label += context.parsed + ' issues (' + percentage + '%)';
-                                    }
-                                    return label;
+                                    } return label;
                                 }
                             }
                         }
@@ -918,22 +719,10 @@
             });
         }
 	
-		
 		window.onload = function() {
-
 			loadGoogleSheet();
-
-			// Auto refresh every 30 seconds
-			setInterval(() => {
-
-				console.log("Auto syncing Google Sheet...");
-
-				loadGoogleSheet();
-
-			}, 60000);
-
+			setInterval(() => { console.log("Auto syncing Google Sheet..."); loadGoogleSheet(); }, 60000);
 		};
-	
     </script>
 </body>
 </html>
