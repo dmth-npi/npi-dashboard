@@ -62,11 +62,38 @@
                     <span class="font-bold text-lg tracking-tight sm:hidden">NPI Dashboard</span>
                 </div>
                 
-                <div class="flex items-center gap-3">
-                    <div class="h-8 w-8 rounded-full bg-slate-600 flex items-center justify-center border-2 border-slate-400">
-                        <i class="fa-solid fa-user-tie text-sm"></i>
-                    </div>
-                </div>
+				
+				<div class="flex items-center gap-3">
+
+					<span id="lastUpdatedText"
+						  class="text-xs text-slate-300 hidden lg:block">
+						Connecting...
+					</span>
+
+					<button onclick="loadGoogleSheet()"
+							class="bg-corporate-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+						<i class="fa-solid fa-arrows-rotate"></i>
+						Sync
+					</button>
+
+					<label for="csvUpload"
+						   class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 cursor-pointer">
+						<i class="fa-solid fa-file-csv"></i>
+						CSV
+					</label>
+
+					<input type="file"
+						   id="csvUpload"
+						   accept=".csv"
+						   class="hidden"
+						   onchange="handleFileUpload(event)">
+
+					<div class="h-8 w-8 rounded-full bg-slate-600 flex items-center justify-center border-2 border-slate-400">
+						<i class="fa-solid fa-user-tie text-sm"></i>
+					</div>
+
+				</div>
+				
             </div>
         </div>
     </nav>
@@ -74,26 +101,7 @@
     <main class="flex-grow max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
         
         <!-- Live Sync Control Panel -->
-        <div class="glass-panel p-5 rounded-xl shadow-sm border-l-4 border-l-corporate-primary bg-white flex flex-col xl:flex-row gap-4 items-start xl:items-center">
-            <div class="flex-grow w-full">
-                <div class="flex items-center gap-2 mb-1">
-                    <label class="block text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-cloud-bolt text-blue-600"></i> Data Synchronization
-                    </label>
-                </div>
-                <p class="text-sm text-slate-500" id="lastUpdatedText">Fetching data from Live Google Sheet...</p>
-            </div>
-            
-            <div class="flex gap-2 w-full xl:w-auto">
-                <button onclick="loadGoogleSheet()" class="cursor-pointer bg-corporate-primary hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform active:scale-95">
-                    <i class="fa-solid fa-arrows-rotate"></i> Sync Live Data
-                </button>
-                <label for="csvUpload" class="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-sm border border-slate-300">
-                    <i class="fa-solid fa-file-csv"></i> CSV
-                </label>
-                <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
-            </div>
-        </div>
+
 
         <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
             <div>
