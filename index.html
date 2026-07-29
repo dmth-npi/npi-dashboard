@@ -279,6 +279,7 @@
     <script>
         // Data State
         let taskData = [];
+		let lastDataHash = "";
         let workloadChartInstance = null;
         let statusChartInstance = null;
         let changeTypeChartInstance = null;
@@ -359,11 +360,22 @@
         // 🚀 Smart Live Sync from Google Sheet
 		async function loadGoogleSheet() {
             showToast("Fetching data from Google Sheet...", false);
-			const apiUrl = "https://script.google.com/macros/s/AKfycbw16UzkDpIE9LV_xr65Q8fKUWrUpUup3UzXguucS9PV_IoJ0Pw2M7b4eqpT9acdLcpm/exec";
+			const apiUrl = "https://script.google.com/macros/s/AKfycbyvixx6lSej0VjTYlu-Fuj4kLZxRF-R7TBZU1tOaUnlWzVIaaJa0_P5x1k14VZw6KOP/exec";
 			
             try {
 				const response = await fetch(apiUrl);
 				const rows = await response.json();
+				
+				const newHash = JSON.stringify(rows);
+
+				if(newHash === lastDataHash){
+
+					console.log("No changes detected");
+
+					return;
+				}
+
+				lastDataHash = newHash;
 
 				taskData = rows.map(r => {
                     // 🛠️ SMART PARENT DETECTION: Scan all possible columns for parent CR
@@ -897,10 +909,22 @@
                 }
             });
         }
+	
+		
+		window.onload = function() {
 
-	    window.onload = function() {
-		    loadGoogleSheet();
-	    };
+			loadGoogleSheet();
+
+			// Auto refresh every 30 seconds
+			setInterval(() => {
+
+				console.log("Auto syncing Google Sheet...");
+
+				loadGoogleSheet();
+
+			}, 60000);
+
+		};
 	
     </script>
 </body>
