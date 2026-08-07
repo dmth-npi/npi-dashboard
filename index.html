@@ -27,10 +27,10 @@
         }
     </script>
     <style>
-        body { background-color: #f1f5f9; }
+        body { background-color: #f1f5f9; overflow-x: hidden; }
         .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .kpi-card { transition: all 0.2s ease-in-out; }
@@ -44,14 +44,14 @@
         }
         .resizer:hover, .resizing { background-color: #3b82f6; opacity: 0.5; }
         
-        /* Comment Sidebar transition */
-        .sidebar-open { transform: translateX(0); }
+        /* Sidebar transition utilities */
+        .sidebar-open { transform: translateX(0%); }
         .sidebar-closed { transform: translateX(100%); }
+        .word-break { word-break: break-word; }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col relative">
 
-    <!-- Navbar -->
     <nav class="bg-corporate-dark text-white shadow-md z-40 relative">
         <div class="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
@@ -63,39 +63,35 @@
                     <span class="font-bold text-lg tracking-tight sm:hidden">NPI Dashboard</span>
                 </div>
                 
-                <div class="flex items-center gap-3">
-                    <span id="lastUpdatedText" class="text-xs text-slate-300 hidden lg:block">Connecting...</span>
-                    <button onclick="loadGoogleSheet(true)" class="bg-corporate-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
-                        <i id="syncIcon" class="fa-solid fa-arrows-rotate"></i> Sync
-                    </button>
-                    <label for="csvUpload" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors">
-                        <i class="fa-solid fa-file-csv"></i> CSV
-                    </label>
-                    <input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
-                    <div class="h-8 w-8 rounded-full bg-slate-600 flex items-center justify-center border-2 border-slate-400">
-                        <i class="fa-solid fa-user-tie text-sm"></i>
-                    </div>
-                </div>
+				<div class="flex items-center gap-3">
+					<span id="lastUpdatedText" class="text-xs text-slate-300 hidden lg:block">Connecting...</span>
+					<button onclick="loadGoogleSheet()" class="bg-corporate-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+						<i class="fa-solid fa-arrows-rotate"></i> Sync
+					</button>
+					<label for="csvUpload" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors">
+						<i class="fa-solid fa-file-csv"></i> CSV
+					</label>
+					<input type="file" id="csvUpload" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
+					<div class="h-8 w-8 rounded-full bg-slate-600 flex items-center justify-center border-2 border-slate-400">
+						<i class="fa-solid fa-user-tie text-sm"></i>
+					</div>
+				</div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="flex-grow max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
         
-        <!-- Header & Filters -->
         <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
             <div><h1 class="text-2xl font-bold text-slate-900">Workload & WIP Tracking</h1></div>
             
             <div class="flex flex-wrap items-center gap-2">
-                <!-- Status Filter -->
                 <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border border-slate-200 focus-within:ring-2 focus-within:ring-corporate-primary/20">
                     <i class="fa-solid fa-list-check text-slate-400 text-xs"></i>
                     <select id="statusFilter" onchange="syncTableFilter('top')" class="text-sm border-none bg-transparent focus:ring-0 font-medium text-slate-700 cursor-pointer outline-none w-full sm:w-auto min-w-[150px]">
                         <option value="All">All Statuses</option>
                     </select>
                 </div>
-                <!-- Engineer Filter -->
                 <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-sm border border-corporate-primary/30 focus-within:ring-2 focus-within:ring-corporate-primary/20 bg-blue-50/30">
                     <i class="fa-solid fa-user-tie text-corporate-primary text-xs"></i>
                     <select id="engineerFilter" onchange="filterData()" class="text-sm border-none bg-transparent focus:ring-0 font-semibold text-corporate-primary cursor-pointer outline-none w-full sm:w-auto min-w-[140px]">
@@ -105,7 +101,6 @@
             </div>
         </div>
 
-        <!-- KPIs -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
             <div id="card-All" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-corporate-primary relative overflow-hidden group ring-2 ring-corporate-primary scale-[1.02]" onclick="filterByKpi('All')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-corporate-primary transition-transform group-hover:scale-110"><i class="fa-solid fa-bars-progress text-6xl"></i></div>
@@ -115,7 +110,6 @@
                     <span class="text-[9px] sm:text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded border border-blue-100">Workload</span>
                 </div>
             </div>
-            
             <div id="card-In-Progress" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-amber-500 relative overflow-hidden group opacity-70 hover:opacity-100 hover:-translate-y-1" onclick="filterByKpi('In Progress')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-amber-500 transition-transform group-hover:scale-110"><i class="fa-solid fa-spinner text-6xl"></i></div>
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">IN PROGRESS</p>
@@ -124,7 +118,6 @@
                     <span class="text-[9px] sm:text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-100">Active</span>
                 </div>
             </div>
-
             <div id="card-In-Review" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-indigo-500 relative overflow-hidden group opacity-70 hover:opacity-100 hover:-translate-y-1" onclick="filterByKpi('In Review')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-indigo-500 transition-transform group-hover:scale-110"><i class="fa-solid fa-magnifying-glass-chart text-6xl"></i></div>
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">IN REVIEW</p>
@@ -133,7 +126,6 @@
                     <span class="text-[9px] sm:text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">Pending</span>
                 </div>
             </div>
-            
             <div id="card-Parent" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-purple-500 relative overflow-hidden group opacity-70 hover:opacity-100 hover:-translate-y-1" onclick="filterByKpi('Parent')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-purple-500 transition-transform group-hover:scale-110"><i class="fa-solid fa-diagram-project text-6xl"></i></div>
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">PARENT CRs</p>
@@ -142,7 +134,6 @@
                     <span class="text-[9px] sm:text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-1 rounded border border-purple-100">Main</span>
                 </div>
             </div>
-
             <div id="card-Critical" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-corporate-danger relative overflow-hidden group opacity-70 hover:opacity-100 hover:-translate-y-1" onclick="filterByKpi('Critical')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-corporate-danger transition-transform group-hover:scale-110"><i class="fa-solid fa-triangle-exclamation text-6xl"></i></div>
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">High Priority</p>
@@ -151,7 +142,6 @@
                     <span class="text-[9px] sm:text-[10px] font-bold text-red-700 bg-red-50 px-2 py-1 rounded border border-red-100">Alert</span>
                 </div>
             </div>
-
             <div id="card-Todo" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-slate-400 relative overflow-hidden group opacity-70 hover:opacity-100 hover:-translate-y-1" onclick="filterByKpi('Todo')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-slate-400 transition-transform group-hover:scale-110"><i class="fa-solid fa-list-ul text-6xl"></i></div>
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">TO DO</p>
@@ -160,7 +150,6 @@
                     <span class="text-[9px] sm:text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">Backlog</span>
                 </div>
             </div>
-            
             <div id="card-Overdue" class="kpi-card cursor-pointer glass-panel rounded-xl p-4 shadow-sm border-t-4 border-t-rose-500 relative overflow-hidden group opacity-70 hover:opacity-100 hover:-translate-y-1" onclick="filterByKpi('Overdue')">
                 <div class="absolute -right-2 -top-2 opacity-5 text-rose-500 transition-transform group-hover:scale-110"><i class="fa-solid fa-clock-rotate-left text-6xl"></i></div>
                 <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 truncate">OVERDUE</p>
@@ -171,7 +160,6 @@
             </div>
         </div>
 
-        <!-- Charts Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
             <div class="glass-panel p-5 rounded-xl shadow-sm xl:col-span-2 flex flex-col border border-slate-200 bg-white/50">
                 <div class="flex justify-between items-center mb-4">
@@ -204,8 +192,7 @@
             </div>
         </div>
 
-        <!-- Data Table Section -->
-        <div class="glass-panel rounded-xl shadow-sm overflow-hidden flex flex-col border border-slate-200 z-10">
+        <div class="glass-panel rounded-xl shadow-sm overflow-hidden flex flex-col border border-slate-200">
             <div class="p-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center bg-white">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-brands fa-jira text-blue-600"></i> Issue Details
@@ -230,10 +217,11 @@
             </div>
             
             <div class="overflow-x-auto custom-scrollbar bg-white min-h-[300px]">
-                <table class="min-w-full divide-y divide-slate-200 relative">
-                    <thead class="bg-slate-50 sticky top-0 z-20 shadow-sm">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50 sticky top-0 z-10 shadow-sm">
                         <tr>
                             <th scope="col" class="relative px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider" style="width: 100px;">Parent CR</th>
+                            <th scope="col" class="relative px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider" style="width: 200px;">Parent Name</th>
                             <th scope="col" class="relative px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider" style="width: 120px;">Issue Key</th>
                             <th scope="col" class="relative px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider" style="width: 250px;">Summary / Title</th>
                             <th scope="col" class="relative px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider" style="width: 120px;">Change Type</th>
@@ -248,7 +236,7 @@
                                     </select>
                                 </div>
                             </th>
-                            <th scope="col" class="relative px-4 py-3.5 text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center" style="width: 120px;">Comments</th>
+                            <th scope="col" class="relative px-4 py-3.5 text-center text-[11px] font-bold text-slate-500 uppercase tracking-wider" style="width: 110px;">Comment</th>
                         </tr>
                     </thead>
                     <tbody id="taskTableBody" class="bg-white divide-y divide-slate-100"></tbody>
@@ -261,86 +249,207 @@
         </div>
     </main>
 
-    <!-- Sidebar Overlay & Panel for Comments -->
-    <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden transition-opacity opacity-0" onclick="closeCommentSidebar()"></div>
+    <!-- Sidebar Backdrop -->
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="closeCommentSidebar()"></div>
     
-    <div id="commentSidebar" class="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-slate-100 shadow-2xl z-50 sidebar-closed flex flex-col border-l border-slate-300 transition-transform duration-300 ease-in-out">
-        <!-- Sidebar Header -->
-        <div class="p-4 border-b border-slate-200 bg-white flex justify-between items-center shadow-sm z-10">
-            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                Comments 
-                <i class="fa-solid fa-angle-down text-sm text-slate-400"></i>
-            </h3>
-            <div class="flex items-center gap-2">
-                <span id="sidebarIssueKey" class="text-xs font-bold text-corporate-primary bg-blue-50 px-2 py-1 rounded border border-blue-100"></span>
-                <button onclick="closeCommentSidebar()" class="text-slate-400 hover:text-slate-700 h-8 w-8 rounded flex items-center justify-center hover:bg-slate-100 transition-colors">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
+    <!-- Sidebar Panel (Microsoft Teams Style) -->
+    <div id="commentSidebar" class="fixed top-0 right-0 h-full w-[400px] max-w-full bg-[#f5f5f5] shadow-2xl z-50 sidebar-closed transition-transform duration-300 flex flex-col border-l border-slate-300">
+        <!-- Header -->
+        <div class="p-4 bg-[#f5f5f5] flex justify-between items-center">
+            <h2 class="text-[17px] font-semibold text-slate-800 flex items-center gap-2">
+                Comments <i class="fa-solid fa-chevron-down text-[10px] text-slate-500 mt-1 cursor-pointer"></i>
+            </h2>
+            <button onclick="closeCommentSidebar()" class="text-slate-500 hover:text-slate-800 transition-colors h-8 w-8 rounded flex items-center justify-center hover:bg-slate-200">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
         </div>
         
-        <!-- Sidebar Input -->
-        <div class="p-4 bg-white border-b border-slate-200 shadow-sm z-10">
-            <div class="border border-slate-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-corporate-primary/20 focus-within:border-corporate-primary transition-all">
-                <textarea id="newCommentText" class="w-full h-16 p-3 text-sm outline-none resize-none custom-scrollbar text-slate-700 bg-white" placeholder="@mention or comment" onkeydown="if(event.ctrlKey && event.key==='Enter') saveNewComment()"></textarea>
-                <div class="bg-slate-50 px-3 py-2 border-t border-slate-200 flex justify-between items-center">
-                    <span class="text-[10px] text-slate-400">Ctrl + Enter to send</span>
-                    <button onclick="saveNewComment()" class="text-xs font-bold bg-corporate-primary text-white px-4 py-1.5 rounded hover:bg-blue-700 transition-colors shadow-sm">
-                        Post Comment
+        <!-- Input Area -->
+        <div class="px-4 pb-4 bg-[#f5f5f5]">
+            <div class="bg-white border border-slate-300 focus-within:border-corporate-primary flex flex-col transition-colors">
+                <textarea id="newCommentText" rows="2" class="w-full text-[13px] outline-none resize-none placeholder:text-slate-500 p-2 text-slate-700 custom-scrollbar" placeholder="@mention or comment"></textarea>
+                <div class="flex justify-end p-1.5 border-t border-slate-100 bg-slate-50">
+                    <button onclick="saveNewComment()" class="text-corporate-primary hover:bg-blue-50 text-[13px] px-3 py-1 rounded font-semibold transition-colors flex items-center gap-1.5">
+                        <i class="fa-regular fa-paper-plane"></i> Send
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Sidebar Comment List -->
-        <div id="commentList" class="flex-grow overflow-y-auto p-4 space-y-4 bg-slate-100 custom-scrollbar">
-            <!-- Comments will be injected here -->
+        <!-- Issue Tracker Header -->
+        <div class="px-4 py-2 border-y border-slate-200 bg-white text-xs text-slate-600 font-semibold truncate flex items-center gap-2">
+            <i class="fa-brands fa-jira text-blue-600"></i>
+            <span id="sidebarIssueKey" class="truncate">No Issue Selected</span>
+        </div>
+
+        <!-- Comments List Area -->
+        <div id="sidebarCommentList" class="flex-grow overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[#f5f5f5]">
+            <!-- Comments rendered here via JS -->
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-800 text-white px-5 py-3.5 rounded-lg shadow-xl flex items-center gap-3 z-50 border border-slate-700">
         <i class="fa-solid fa-circle-check text-corporate-success text-xl"></i>
         <span id="toastMessage" class="text-sm font-semibold">Action successful</span>
     </div>
 
-    <!-- Application Script -->
     <script>
         // Data State
         let taskData = [];
-        let lastDataHash = "";
+		let lastDataHash = "";
         let workloadChartInstance = null;
         let statusChartInstance = null;
         let changeTypeChartInstance = null;
         let currentKpiFilter = 'All'; 
         
+        let localComments = {};
         let currentEditJiraKey = null;
+        const generateId = () => Math.random().toString(36).substr(2, 9);
 
-        // Load & Migrate Comments Structure
-        let localComments = JSON.parse(localStorage.getItem('npiComments')) || {};
-        
-        // Migration: Convert old string format to new array of objects format
-        let needsSave = false;
-        for (let key in localComments) {
-            if (typeof localComments[key] === 'string') {
-                localComments[key] = [{
-                    id: generateId(),
-                    text: localComments[key],
-                    date: new Date().toISOString(),
-                    author: "Current User" // Default user since old system didn't track
-                }];
-                needsSave = true;
+        // --- Migration & LocalStorage Logic ---
+        function loadAndMigrateComments() {
+            try {
+                let saved = JSON.parse(localStorage.getItem('npiComments')) || {};
+                let isDirty = false;
+                for (let key in saved) {
+                    if (typeof saved[key] === 'string') {
+                        // Migrate old string format to array format
+                        saved[key] = [{
+                            id: generateId(),
+                            text: saved[key],
+                            date: new Date().toISOString(),
+                            author: "Current User"
+                        }];
+                        isDirty = true;
+                    } else if (!Array.isArray(saved[key])) {
+                        // ถ้าข้อมูลพังหรือไม่ใช่ Array ให้ลบทิ้งตามที่ User ต้องการ
+                        delete saved[key];
+                        isDirty = true;
+                    } else {
+                        // เช็คว่าข้างใน Array โครงสร้างถูกต้องไหม ถ้าไม่ถูกต้อง ให้ลบทิ้ง
+                        const isValid = saved[key].every(c => typeof c === 'object' && c !== null && 'text' in c);
+                        if (!isValid) {
+                            delete saved[key];
+                            isDirty = true;
+                        }
+                    }
+                }
+                if (isDirty) localStorage.setItem('npiComments', JSON.stringify(saved));
+                localComments = saved;
+            } catch (e) {
+                console.error("Error loading comments", e);
+                // ถ้า JSON พังทั้งหมด ให้ล้างใหม่เลย
+                localComments = {};
+                localStorage.removeItem('npiComments');
             }
         }
-        if (needsSave) {
+        
+        function openCommentSidebar(commentKey, displayTitle) {
+            if (!commentKey) return;
+            currentEditJiraKey = commentKey;
+            document.getElementById('sidebarIssueKey').innerText = displayTitle || commentKey;
+            document.getElementById('newCommentText').value = '';
+            
+            renderSidebarComments(commentKey);
+
+            // Show UI
+            const backdrop = document.getElementById('sidebarBackdrop');
+            const sidebar = document.getElementById('commentSidebar');
+            
+            backdrop.classList.remove('hidden');
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                sidebar.classList.remove('sidebar-closed');
+                sidebar.classList.add('sidebar-open');
+                document.getElementById('newCommentText').focus();
+            }, 10);
+        }
+
+        function closeCommentSidebar() {
+            const backdrop = document.getElementById('sidebarBackdrop');
+            const sidebar = document.getElementById('commentSidebar');
+            
+            backdrop.classList.add('opacity-0');
+            sidebar.classList.remove('sidebar-open');
+            sidebar.classList.add('sidebar-closed');
+            
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+                currentEditJiraKey = null;
+            }, 300);
+        }
+
+        function saveNewComment() {
+            if (!currentEditJiraKey) return;
+            const text = document.getElementById('newCommentText').value.trim();
+            if (text === '') return;
+
+            if (!localComments[currentEditJiraKey] || !Array.isArray(localComments[currentEditJiraKey])) {
+                localComments[currentEditJiraKey] = [];
+            }
+
+            localComments[currentEditJiraKey].push({
+                id: generateId(),
+                text: text,
+                date: new Date().toISOString(),
+                author: "Current User (Datamars TH)"
+            });
+
             localStorage.setItem('npiComments', JSON.stringify(localComments));
+            document.getElementById('newCommentText').value = '';
+            
+            renderSidebarComments(currentEditJiraKey);
+            filterData(); // Update comment counts in table
+            showToast("Note added!");
         }
 
-        function generateId() {
-            return Math.random().toString(36).substr(2, 9);
+        function renderSidebarComments(commentKey) {
+            const listDiv = document.getElementById('sidebarCommentList');
+            listDiv.innerHTML = '';
+            
+            // ดึงข้อมูล ถ้าไม่ใช่ Array ให้เซ็ตเป็นว่างป้องกันโค้ดพัง
+            let comments = localComments[commentKey];
+            if (!Array.isArray(comments)) {
+                comments = [];
+            }
+
+            if (comments.length === 0) {
+                listDiv.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 text-slate-400">
+                        <i class="fa-regular fa-comments text-4xl mb-3 opacity-30"></i>
+                        <p class="text-[13px]">No comments yet</p>
+                    </div>`;
+                return;
+            }
+
+            // Sort by newest first
+            const sortedComments = [...comments].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            // Optional: Group by time (Simplified to just rendering cards for Teams feel)
+            sortedComments.forEach((c, index) => {
+                const dateObj = new Date(c.date);
+                // Formatting date like "Jul 22" or "Today 10:30 AM"
+                const dateOptions = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                const dateStr = dateObj.toLocaleDateString('en-US', dateOptions);
+                const safeAuthor = c.author ? c.author : "Current User";
+
+                listDiv.innerHTML += `
+                    <div class="bg-white p-3 shadow-sm border border-slate-200 rounded-[4px] relative">
+                        <div class="flex gap-2.5">
+                            <div class="h-8 w-8 rounded-full bg-slate-200 border border-slate-300 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                                <i class="fa-solid fa-user text-slate-400 text-[14px]"></i>
+                            </div>
+                            <div class="flex-grow min-w-0">
+                                <div class="text-[13px] font-semibold text-slate-800 leading-tight">${safeAuthor}</div>
+                                <div class="text-[13px] text-slate-700 mt-1 word-break whitespace-pre-wrap">${c.text}</div>
+                                <div class="text-[11px] text-slate-500 mt-2">${dateStr}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        // --- Column Resizing Logic ---
         function initResizer() {
             const cols = document.querySelectorAll('th');
             cols.forEach(col => {
@@ -376,139 +485,7 @@
             };
             resizer.addEventListener('mousedown', mouseDownHandler);
         }
-        // -----------------------------
 
-        // --- Sidebar Comment Logic ---
-        function openCommentSidebar(jiraKey) {
-            currentEditJiraKey = jiraKey;
-            document.getElementById('sidebarIssueKey').innerText = jiraKey;
-            document.getElementById('newCommentText').value = '';
-            
-            renderSidebarComments(jiraKey);
-
-            // Show UI
-            const backdrop = document.getElementById('sidebarBackdrop');
-            const sidebar = document.getElementById('commentSidebar');
-            
-            backdrop.classList.remove('hidden');
-            // small delay for transition
-            setTimeout(() => {
-                backdrop.classList.remove('opacity-0');
-                sidebar.classList.remove('sidebar-closed');
-                sidebar.classList.add('sidebar-open');
-                document.getElementById('newCommentText').focus();
-            }, 10);
-        }
-
-        function closeCommentSidebar() {
-            const backdrop = document.getElementById('sidebarBackdrop');
-            const sidebar = document.getElementById('commentSidebar');
-            
-            sidebar.classList.remove('sidebar-open');
-            sidebar.classList.add('sidebar-closed');
-            backdrop.classList.add('opacity-0');
-            
-            setTimeout(() => {
-                backdrop.classList.add('hidden');
-                currentEditJiraKey = null;
-            }, 300);
-        }
-
-        function saveNewComment() {
-            if (!currentEditJiraKey) return;
-            const text = document.getElementById('newCommentText').value.trim();
-            if (text === '') return;
-
-            // Ensure array exists
-            if (!localComments[currentEditJiraKey]) {
-                localComments[currentEditJiraKey] = [];
-            }
-
-            // Create new comment object
-            const newComment = {
-                id: generateId(),
-                text: text,
-                date: new Date().toISOString(),
-                author: "Thanason Saenkhammoon - Ko (Datamars TH)" // Mock user name based on image
-            };
-
-            // Add to front of array (newest first)
-            localComments[currentEditJiraKey].unshift(newComment);
-            
-            // Save & update UI
-            localStorage.setItem('npiComments', JSON.stringify(localComments));
-            document.getElementById('newCommentText').value = '';
-            
-            renderSidebarComments(currentEditJiraKey);
-            filterData(); // Refresh table to update comment counts
-            showToast("Comment posted!");
-        }
-
-        function deleteComment(jiraKey, commentId) {
-            if(confirm("Delete this comment?")) {
-                localComments[jiraKey] = localComments[jiraKey].filter(c => c.id !== commentId);
-                if (localComments[jiraKey].length === 0) {
-                    delete localComments[jiraKey];
-                }
-                localStorage.setItem('npiComments', JSON.stringify(localComments));
-                renderSidebarComments(jiraKey);
-                filterData();
-            }
-        }
-
-        function formatDateFriendly(isoString) {
-            const d = new Date(isoString);
-            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-
-        function renderSidebarComments(jiraKey) {
-            const container = document.getElementById('commentList');
-            container.innerHTML = '';
-            
-            const comments = localComments[jiraKey] || [];
-            
-            if (comments.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-10 flex flex-col items-center justify-center opacity-50">
-                        <i class="fa-regular fa-comments text-4xl mb-3 text-slate-400"></i>
-                        <p class="text-sm font-medium text-slate-500">No comments yet.</p>
-                        <p class="text-xs text-slate-400">Be the first to share an update!</p>
-                    </div>`;
-                return;
-            }
-
-            // Render comments in style of provided image
-            comments.forEach(comment => {
-                const dateStr = formatDateFriendly(comment.date);
-                
-                const card = document.createElement('div');
-                card.className = "bg-white p-4 rounded shadow-sm border border-slate-200 flex gap-3 group relative";
-                card.innerHTML = `
-                    <!-- Avatar -->
-                    <div class="flex-shrink-0">
-                        <div class="h-8 w-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center overflow-hidden">
-                            <i class="fa-solid fa-user text-slate-400 text-xs"></i>
-                        </div>
-                    </div>
-                    <!-- Content -->
-                    <div class="flex-grow min-w-0">
-                        <div class="flex justify-between items-start mb-1">
-                            <h4 class="text-xs font-bold text-slate-700 leading-tight pr-4">${comment.author}</h4>
-                            <button onclick="deleteComment('${jiraKey}', '${comment.id}')" class="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 absolute top-3 right-3">
-                                <i class="fa-solid fa-trash-can text-[10px]"></i>
-                            </button>
-                        </div>
-                        <p class="text-xs text-slate-600 whitespace-pre-wrap break-words leading-relaxed">${comment.text}</p>
-                        <div class="mt-2 text-[10px] text-slate-400 font-medium">
-                            ${dateStr}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-        // -----------------------------
-        
         const isNew = s => { const st = s.toLowerCase(); return st.includes('todo') || st.includes('to do') || st.includes('new') || st.includes('open') || st.includes('backlog'); };
         const isProg = s => { const st = s.toLowerCase(); return st.includes('progress') || st.includes('active') || st.includes('execution'); };
         const isReview = s => { const st = s.toLowerCase(); return st.includes('review') || st.includes('approval') || st.includes('waiting') || st.includes('pending') || st.includes('hold'); };
@@ -522,6 +499,13 @@
             const diffDays = Math.ceil(Math.abs(d - today) / (1000 * 60 * 60 * 24)); 
             if (diffDays <= 14) return 'At Risk';
             return 'Normal';
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast'); document.getElementById('toastMessage').innerText = msg;
+            toast.querySelector('i').className = isError ? "fa-solid fa-circle-exclamation text-corporate-danger text-xl" : "fa-solid fa-circle-check text-corporate-success text-xl";
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3500);
         }
 
         function syncTableFilter(source) {
@@ -641,73 +625,79 @@
             renderChangeTypeChart(fullyFilteredData);
         }
 
-        async function loadGoogleSheet(isManual = false) {
-            const syncIcon = document.getElementById('syncIcon');
-            if (isManual) syncIcon.classList.add('fa-spin');
-            
-            if (isManual) showToast("Fetching data from Google Sheet...", false);
-            const baseUrl = "https://script.google.com/macros/s/AKfycbziruG0jt-KwfwFKdjV87rpmN6fEchh6ooAjmvEF_chp9w9P1EB92hlpxwgLTmIP-ff/exec";
-            // Add timestamp cache-buster to force fresh data retrieval
-            const apiUrl = baseUrl + "?t=" + new Date().getTime();
-            
+        async function loadGoogleSheet() {
+            showToast("Fetching data from Google Sheet...", false);
+            // เพิ่ม Cache Buster ป้องกัน Browser จำค่าเดิม
+			const apiUrl = "https://script.google.com/macros/s/AKfycbwyVLQVWZKwjpaPcXgx62Jb-dGnq4ifqh-R2Jy6NKrszkefiqO5jYNkBRpMq_9J4i9H/exec?t=" + new Date().getTime();
             try {
-                const response = await fetch(apiUrl); 
+				const response = await fetch(apiUrl, { cache: 'no-store' }); 
                 const rows = await response.json();
-                const newHash = JSON.stringify(rows);
-                
-                if(newHash === lastDataHash) {
-                    if (isManual) {
-                        showToast("Data is already up to date!");
-                        syncIcon.classList.remove('fa-spin');
-                    }
+				const newHash = JSON.stringify(rows);
+				if(newHash === lastDataHash) {
+                    showToast("Data is already up to date!");
                     return;
                 }
-                lastDataHash = newHash;
+				lastDataHash = newHash;
 
-                taskData = rows.map(r => {
+				taskData = rows.map(r => {
                     let parentVal = "";
                     for (const key in r) {
                         const lowerKey = key.toLowerCase().trim();
                         if (lowerKey === "parent" || lowerKey === "parent link" || lowerKey === "epic link" || lowerKey === "parent cr" || lowerKey === "parent issue" || lowerKey === "custom field (parent link)" || lowerKey === "parent id") {
-                            parentVal = r[key]; break;
+                            parentVal = String(r[key] || ""); break;
                         }
                     }
                     if (!parentVal) {
                         for (const key in r) {
                             if (key.toLowerCase().trim().includes("parent") || key.toLowerCase().trim().includes("epic")) {
-                                parentVal = r[key]; break;
+                                parentVal = String(r[key] || ""); break;
                             }
                         }
                     }
-                    if (parentVal !== null && parentVal !== undefined) {
-                        parentVal = String(parentVal).trim();
+                    if (parentVal) {
+                        parentVal = parentVal.trim();
                         if (parentVal.toUpperCase() === 'N/A' || parentVal === '-') parentVal = "";
-                    } else { parentVal = ""; }
+                    }
 
                     let dueDateVal = r["Due Date"] || r["Due date"] || r["Custom field (Due Date)"] || "";
                     if (dueDateVal && typeof dueDateVal === 'string' && dueDateVal.includes("T")) dueDateVal = dueDateVal.split("T")[0];
                     
-                    const summary = r["Summary"] || r["Title"] || "Untitled";
+                    const summary = String(r["Summary"] || r["Title"] || "Untitled Task");
+                    const rawJira = String(r["Issue Key"] || r["Key"] || r["Issue key"] || "");
+                    const pName = String(
+						r["Parent Name"] ||
+						r["Parent Summary"] ||
+						r["Parent summary"] ||
+						r["Epic Name"] ||
+						""
+					);
+                    
+                    // สร้าง Comment Key รองรับเคสที่ไม่มี Issue Key (เช่น Overdue)
+                    const commentKey = rawJira.trim() !== "" ? rawJira.trim() : "SYS-" + summary.substring(0,30).replace(/[^a-zA-Z0-9]/g, '');
 
-                    return {
-                        id: generateId(), jira: r["Issue Key"] || r["Key"] || r["Issue key"] || "",
-                        parent: parentVal, name: summary,
-                        assignee: r["Assignee"] || "Unassigned", priority: r["Priority"] || "Medium",
-                        status: r["Status"] || "TODO", dueDate: dueDateVal,
-                        changeType: r["Issue/Change Type"] || r["Change Type"] || r["Issue Type"] || ""
-                    };
-                });
+					return {
+						id: generateId(), 
+                        jira: rawJira, 
+                        commentKey: commentKey,
+						parent: parentVal, 
+                        parentName: pName,
+                        name: summary,
+						assignee: r["Assignee"] || "Unassigned", 
+                        priority: r["Priority"] || "Medium",
+						status: r["Status"] || "TODO", 
+                        dueDate: dueDateVal,
+						changeType: r["Issue/Change Type"] || r["Change Type"] || r["Issue Type"] || ""
+					};
+				});
 
-                updateFiltersUI(taskData); applyCurrentKpiUI(); filterData();
+				updateFiltersUI(taskData); applyCurrentKpiUI(); filterData();
                 const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 document.getElementById('lastUpdatedText').innerHTML = `<span class="text-corporate-success font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Live Data Synced</span> <span class="text-slate-400 text-xs ml-2">Last updated: ${timeStr}</span>`;
-                if(isManual) showToast("Google Sheet loaded successfully!");
-            } catch (err) {
-                if(isManual) showToast("Failed to load Google Sheet. Check your connection.", true);
-            } finally {
-                if (isManual) syncIcon.classList.remove('fa-spin');
-            }
-        }
+				showToast("Google Sheet loaded successfully!");
+			} catch (err) {
+				showToast("Failed to load Google Sheet. Check your connection or API URL.", true);
+			}
+		}
 
         function parseCSV(text) {
             const rows = []; let row = []; let inQuotes = false; let currentVal = '';
@@ -744,6 +734,7 @@
             let iParent = headers.findIndex(h => h === "parent" || h === "parent link" || h === "epic link" || h === "parent issue" || h.includes("parent"));
             let iDue = headers.findIndex(h => h === "due date" || h === "due" || h.includes("due date"));
             let iChangeType = headers.findIndex(h => h === "issue/change type" || h === "change type" || h === "issue type" || h.includes("change type"));
+            let iParentName = headers.findIndex(h => h === "parent summary" || h === "epic name" || h === "parent name");
             if(iKey === -1) iKey = 0; if(iSum === -1) iSum = 1;
 
             for(let i = 1; i < rows.length; i++) {
@@ -751,19 +742,30 @@
                 let assigneeName = (iAssign !== -1 && r[iAssign]) ? r[iAssign] : "Unassigned";
                 if(assigneeName.includes('@')) assigneeName = assigneeName.split('@')[0];
                 assigneeName = assigneeName.replace(/\b\w/g, l => l.toUpperCase()).replace('.', ' ');
-                let parentName = (iParent !== -1 && r[iParent]) ? r[iParent].trim() : "";
+                let parentName = (iParent !== -1 && r[iParent]) ? String(r[iParent]).trim() : "";
                 if (parentName.toUpperCase() === 'N/A' || parentName === '-') parentName = "";
-                let dueDateVal = (iDue !== -1 && r[iDue]) ? r[iDue].trim() : "";
+                let dueDateVal = (iDue !== -1 && r[iDue]) ? String(r[iDue]).trim() : "";
                 if(dueDateVal && dueDateVal.includes("T")) dueDateVal = dueDateVal.split("T")[0]; 
-                let changeTypeVal = (iChangeType !== -1 && r[iChangeType]) ? r[iChangeType].trim() : "";
+                let changeTypeVal = (iChangeType !== -1 && r[iChangeType]) ? String(r[iChangeType]).trim() : "";
                 if(changeTypeVal.toLowerCase() === "n/a" || changeTypeVal.toLowerCase() === "tbd" || changeTypeVal === "-") changeTypeVal = "";
+                let pNameStr = (iParentName !== -1 && r[iParentName]) ? String(r[iParentName]).trim() : "";
                 
-                const summary = r[iSum] || "Untitled Task";
+                const summary = String(r[iSum] || "Untitled Task");
+                const rawJira = String(r[iKey] || "");
+                const commentKey = rawJira.trim() !== "" ? rawJira.trim() : "SYS-" + summary.substring(0,30).replace(/[^a-zA-Z0-9]/g, '');
 
                 newData.push({
-                    id: generateId(), jira: r[iKey] || "", parent: parentName, name: summary,
-                    assignee: assigneeName, priority: (iPri !== -1 && r[iPri]) ? r[iPri] : "Medium",
-                    status: (iStat !== -1 && r[iStat]) ? r[iStat] : "TODO", dueDate: dueDateVal, changeType: changeTypeVal
+                    id: generateId(), 
+                    jira: rawJira, 
+                    commentKey: commentKey, 
+                    parent: parentName, 
+                    parentName: pNameStr,
+                    name: summary,
+                    assignee: assigneeName, 
+                    priority: (iPri !== -1 && r[iPri]) ? r[iPri] : "Medium",
+                    status: (iStat !== -1 && r[iStat]) ? r[iStat] : "TODO", 
+                    dueDate: dueDateVal, 
+                    changeType: changeTypeVal
                 });
             }
             if(newData.length > 0) {
@@ -773,13 +775,6 @@
                 document.getElementById('lastUpdatedText').innerHTML = `<span class="text-corporate-success font-semibold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Data Loaded</span> <span class="text-slate-400 text-xs ml-2">Last updated: ${timeStr}</span>`;
                 applyCurrentKpiUI(); filterData(); showToast("Data Synced Successfully!");
             }
-        }
-
-        function showToast(msg, isError = false) {
-            const toast = document.getElementById('toast'); document.getElementById('toastMessage').innerText = msg;
-            toast.querySelector('i').className = isError ? "fa-solid fa-circle-exclamation text-corporate-danger text-xl" : "fa-solid fa-circle-check text-corporate-success text-xl";
-            toast.classList.remove('translate-y-24', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3500);
         }
 
         function getStatusBadge(status) {
@@ -812,42 +807,62 @@
                 const priorityWeight = { "highest": 1, "high": 2, "medium": 3, "major": 3, "low": 4, "lowest": 5, "minor": 5 };
                 data.sort((a,b) => (priorityWeight[a.priority.toLowerCase()] || 99) - (priorityWeight[b.priority.toLowerCase()] || 99));
 
+                // Helper: กรองอักขระพิเศษ ป้องกัน HTML และ JS พัง (เมื่อมี " หรือ ' หรือการขึ้นบรรทัดใหม่ ในตาราง)
+                const escapeHTML = (str) => String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
                 data.forEach(task => {
-                    const jiraRegex = /([A-Z]+-\d+)/i; let jiraHTML = task.jira;
+                    const jiraRegex = /([A-Z]+-\d+)/i; let jiraHTML = task.jira || '<span class="text-slate-400 text-xs italic">N/A</span>';
                     if (task.jira && task.jira.match(jiraRegex)) {
                         const crNum = task.jira.match(jiraRegex)[1].toUpperCase();
-                        jiraHTML = `<a href="https://datamars.atlassian.net/browse/${crNum}" target="_blank" class="text-corporate-primary hover:text-blue-800 font-bold flex items-center gap-1.5 group-hover:underline">${crNum} <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400 group-hover:text-blue-800 transition-colors"></i></a>`;
+                        jiraHTML = `<a href="https://datamars.atlassian.net/browse/${crNum}" target="_blank" class="text-corporate-primary hover:text-blue-800 font-bold flex items-center gap-1.5 group-hover:underline">${escapeHTML(crNum)} <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400 group-hover:text-blue-800 transition-colors"></i></a>`;
                     }
 
                     let parentHTML = ''; 
+                    let parentNameDisplay = '<span class="text-slate-300 italic text-xs">-</span>';
+
                     if (task.parent && task.parent.trim() !== "" && task.parent.toUpperCase() !== "N/A") {
                         let parentStatusClass = 'bg-slate-100 border-slate-200 text-slate-600'; let statusIcon = '';
                         const parentTaskData = taskData.find(t => t.jira === task.parent.trim());
+                        
+                        // หา Parent Name (อิงจาก Data ในตารางก่อน ถ้าไม่มีค่อยดึงจากคอลัมน์ Sheet)
+                        if (parentTaskData && parentTaskData.name) {
+                            parentNameDisplay = `<span class="text-xs text-slate-500 font-medium">${escapeHTML(parentTaskData.name)}</span>`;
+                        } else if (task.parentName && task.parentName.trim() !== "") {
+                            parentNameDisplay = `<span class="text-xs text-slate-500 font-medium">${escapeHTML(task.parentName)}</span>`;
+                        } else {
+                            parentNameDisplay = '<span class="text-slate-400 italic text-xs">Unknown Parent</span>';
+                        }
+
                         if(parentTaskData && isProg(parentTaskData.status)) { parentStatusClass = 'bg-amber-50 border-amber-200 text-amber-700 shadow-sm'; statusIcon = '<i class="fa-solid fa-spinner fa-spin text-[8px] mr-1"></i>'; }
                         if (task.parent.match(jiraRegex)) {
                             const pNum = task.parent.match(jiraRegex)[1].toUpperCase();
-                            parentHTML = `<a href="https://datamars.atlassian.net/browse/${pNum}" target="_blank" class="${parentStatusClass} hover:text-purple-700 font-semibold flex items-center gap-1 hover:underline px-2 py-0.5 rounded border text-[10px] w-fit truncate">${statusIcon}${pNum}</a>`;
+                            parentHTML = `<a href="https://datamars.atlassian.net/browse/${pNum}" target="_blank" class="${parentStatusClass} hover:text-purple-700 font-semibold flex items-center gap-1 hover:underline px-2 py-0.5 rounded border text-[10px] w-fit truncate">${statusIcon}${escapeHTML(pNum)}</a>`;
                         } else {
-                            parentHTML = `<span class="${parentStatusClass} font-semibold px-2 py-0.5 rounded border text-[10px] w-fit truncate">${statusIcon}${task.parent}</span>`;
+                            parentHTML = `<span class="${parentStatusClass} font-semibold px-2 py-0.5 rounded border text-[10px] w-fit truncate">${statusIcon}${escapeHTML(task.parent)}</span>`;
                         }
                     }
 
                     let dueDateHtml = `<span class="text-slate-400 text-xs">-</span>`;
                     if(task.dueDate) {
                         const dateStatus = evaluateDateStatus(task.dueDate, task.status);
-                        if(dateStatus === 'Overdue') { dueDateHtml = `<div class="flex flex-col"><span class="text-red-600 font-bold text-xs">${task.dueDate}</span><span class="text-[8px] font-bold text-white bg-red-500 px-1 py-0.5 rounded mt-0.5 w-max">OVERDUE</span></div>`; } 
-                        else if (dateStatus === 'At Risk') { dueDateHtml = `<div class="flex flex-col"><span class="text-orange-500 font-bold text-xs">${task.dueDate}</span><span class="text-[8px] font-bold text-orange-700 bg-orange-100 px-1 py-0.5 rounded mt-0.5 w-max border border-orange-200"><i class="fa-solid fa-triangle-exclamation mr-1"></i>AT RISK</span></div>`; } 
-                        else { dueDateHtml = `<span class="text-slate-700 font-medium text-xs">${task.dueDate}</span>`; }
+                        if(dateStatus === 'Overdue') { dueDateHtml = `<div class="flex flex-col"><span class="text-red-600 font-bold text-xs">${escapeHTML(task.dueDate)}</span><span class="text-[8px] font-bold text-white bg-red-500 px-1 py-0.5 rounded mt-0.5 w-max">OVERDUE</span></div>`; } 
+                        else if (dateStatus === 'At Risk') { dueDateHtml = `<div class="flex flex-col"><span class="text-orange-500 font-bold text-xs">${escapeHTML(task.dueDate)}</span><span class="text-[8px] font-bold text-orange-700 bg-orange-100 px-1 py-0.5 rounded mt-0.5 w-max border border-orange-200"><i class="fa-solid fa-triangle-exclamation mr-1"></i>AT RISK</span></div>`; } 
+                        else { dueDateHtml = `<span class="text-slate-700 font-medium text-xs">${escapeHTML(task.dueDate)}</span>`; }
                     }
 
                     const colors = ['bg-blue-100 text-blue-800 border-blue-200', 'bg-emerald-100 text-emerald-800 border-emerald-200', 'bg-purple-100 text-purple-800 border-purple-200', 'bg-pink-100 text-pink-800 border-pink-200', 'bg-indigo-100 text-indigo-800 border-indigo-200'];
                     const colorIndex = task.assignee.length % colors.length; const colorClass = colors[colorIndex];
-                    const initial = task.assignee.charAt(0).toUpperCase();
-                    const changeTypeHtml = task.changeType ? `<span class="bg-slate-100 border border-slate-200 px-2 py-1 rounded truncate text-[10px] font-semibold text-slate-600">${task.changeType}</span>` : '';
+                    const initial = escapeHTML(task.assignee.charAt(0).toUpperCase());
+                    const changeTypeHtml = task.changeType ? `<span class="bg-slate-100 border border-slate-200 px-2 py-1 rounded truncate text-[10px] font-semibold text-slate-600">${escapeHTML(task.changeType)}</span>` : '';
 
-                    // Comment Button Logic
-                    const taskComments = localComments[task.jira] || [];
+                    // ตัดช่องว่างและเว้นบรรทัดที่ติดมาจาก Sheet เพื่อป้องกันบั๊ก
+                    const displayTitle = (task.jira || 'NO KEY').trim();
+                    const safeKey = String(task.commentKey).trim();
+
+                    // ป้องกัน Error ตอนนับจำนวน Comment โดยบังคับให้เช็คว่าเป็น Array ก่อนเสมอ
+                    const taskComments = Array.isArray(localComments[safeKey]) ? localComments[safeKey] : [];
                     const commentCount = taskComments.length;
+                    
                     const btnClass = commentCount > 0 
                         ? 'bg-blue-50 text-corporate-primary border-blue-200 hover:bg-blue-100 hover:border-blue-300 shadow-sm' 
                         : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 hover:border-slate-300';
@@ -855,17 +870,19 @@
                     const btnText = commentCount > 0 ? `${commentCount} notes` : 'Add Note';
 
                     const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 group transition-colors";
+                    // ใช้งาน this.dataset.key เพื่อหลีกเลี่ยงการส่งค่า String เข้าฟังก์ชันโดยตรง
                     tr.innerHTML = `
-                        <td class="px-4 py-3 text-sm h-[52px]">${parentHTML}</td>
-                        <td class="px-4 py-3 text-sm flex items-center h-[52px]">${jiraHTML}</td>
-                        <td class="px-4 py-3 text-sm text-slate-700 font-medium leading-tight truncate" title="${task.name}">${task.name}</td>
-                        <td class="px-4 py-3 truncate" title="${task.changeType}">${changeTypeHtml}</td>
-                        <td class="px-4 py-3"><div class="flex items-center"><div class="h-6 w-6 rounded-full ${colorClass} flex items-center justify-center text-[10px] font-black mr-2 border shadow-sm min-w-[24px]">${initial}</div><span class="text-xs text-slate-800 font-bold tracking-tight truncate">${task.assignee}</span></div></td>
+                        <td class="px-4 py-3 text-sm h-[52px]" title="${escapeHTML(task.parent)}">${parentHTML}</td>
+                        <td class="px-4 py-3 truncate" title="${parentNameDisplay.replace(/<[^>]*>?/gm, '')}">${parentNameDisplay}</td>
+                        <td class="px-4 py-3 text-sm flex items-center h-[52px]" title="${escapeHTML(task.jira)}">${jiraHTML}</td>
+                        <td class="px-4 py-3 text-sm text-slate-700 font-medium leading-tight truncate" title="${escapeHTML(task.name)}">${escapeHTML(task.name)}</td>
+                        <td class="px-4 py-3 truncate" title="${escapeHTML(task.changeType)}">${changeTypeHtml}</td>
+                        <td class="px-4 py-3"><div class="flex items-center" title="${escapeHTML(task.assignee)}"><div class="h-6 w-6 rounded-full ${colorClass} flex items-center justify-center text-[10px] font-black mr-2 border shadow-sm min-w-[24px]">${initial}</div><span class="text-xs text-slate-800 font-bold tracking-tight truncate">${escapeHTML(task.assignee)}</span></div></td>
                         <td class="px-4 py-3">${dueDateHtml}</td>
                         <td class="px-4 py-3 text-xs">${getPriorityStyle(task.priority)}</td>
                         <td class="px-4 py-3">${getStatusBadge(task.status)}</td>
                         <td class="px-4 py-3 flex justify-center items-center h-[52px]">
-                            <button onclick="openCommentSidebar('${task.jira}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-wider transition-colors w-max ${btnClass}">
+                            <button onclick="openCommentSidebar(this.dataset.key, this.dataset.title)" data-key="${escapeHTML(safeKey)}" data-title="${escapeHTML(displayTitle)}" class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-wider transition-colors w-[100px] ${btnClass}">
                                 ${btnIcon} ${btnText}
                             </button>
                         </td>
@@ -981,18 +998,13 @@
                 }
             });
         }
-    
-        // Initialize App
-        window.onload = function() {
+	
+		window.onload = function() {
             initResizer(); 
-            loadGoogleSheet(); // Initial Load
-            
-            // Auto Sync every 60 seconds
-            setInterval(() => { 
-                console.log("Auto syncing Google Sheet..."); 
-                loadGoogleSheet(false); 
-            }, 60000);
-        };
+            loadAndMigrateComments();
+			loadGoogleSheet();
+			setInterval(() => { console.log("Auto syncing Google Sheet..."); loadGoogleSheet(); }, 60000);
+		};
     </script>
 </body>
 </html>
